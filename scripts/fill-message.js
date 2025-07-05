@@ -5,6 +5,8 @@
 // @description  Auto-fill LinkedIn message template with name and area
 // @match        https://www.linkedin.com/*
 // @grant        none
+// @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/fill-message.js
+// @downloadURL  https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/fill-message.js
 // ==/UserScript==
 
 (function () {
