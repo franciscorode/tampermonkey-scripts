@@ -49,13 +49,13 @@
 
     function openUserListMinimal(users) {
         const TARGET_AUDIENCE_KEYWORDS = [
-            "data engineer","dataops","data","etl","data engineering","bigdata",
+            "data engineer","dataops","etl","data engineering","bigdata",
             "big data","analytics","data analyst","BI","business intelligence",
             "data architect","data governance","data modeling","data management",
             "CDO","Head of data","VP of data","CTO","Data manager","Director of Data",
             "databricks","snowflake","bigquery","dbt","spark","power bi","tableau",
             "data visualization","data pipeline","lakehouse","data lake","data warehouse",
-            "ingeniero de datos","analista","datos",
+            "ingeniero de datos","analista", "engenheiro de dados"
         ].map(k => k.toLowerCase());
 
         function isTarget(user) {
