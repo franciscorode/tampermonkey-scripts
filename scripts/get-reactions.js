@@ -49,17 +49,18 @@
 
     function openUserListMinimal(users) {
         const TARGET_AUDIENCE_KEYWORDS = [
-            "data engineer","dataops","etl","data engineering","bigdata",
-            "big data","analytics","data analyst","BI","business intelligence",
+            "data engineer","dataops"," etl ","data engineering","bigdata",
+            "big data","analytics","data analyst"," BI ","business intelligence",
             "data architect","data governance","data modeling","data management",
-            "CDO","Head of data","VP of data","CTO","Data manager","Director of Data",
-            "databricks","snowflake","bigquery","dbt","spark","power bi","tableau",
+            " CDO ","Head of data","VP of data"," CTO ","Data manager","Director of Data",
+            "databricks","snowflake","bigquery"," dbt ","spark","power bi","tableau",
             "data visualization","data pipeline","lakehouse","data lake","data warehouse",
             "ingeniero de datos","analista", "engenheiro de dados"
         ].map(k => k.toLowerCase());
     
         const isTarget = (user) => 
             TARGET_AUDIENCE_KEYWORDS.some(k => (user.description || "").toLowerCase().includes(k));
+        
     
         const targetUsers = users.filter(isTarget);
         const otherUsers  = users.filter(u => !isTarget(u));
