@@ -57,39 +57,47 @@
             "data visualization","data pipeline","lakehouse","data lake","data warehouse",
             "ingeniero de datos","analista", "engenheiro de dados"
         ].map(k => k.toLowerCase());
-
-        function isTarget(user) {
-            const desc = (user.description || "").toLowerCase();
-            return TARGET_AUDIENCE_KEYWORDS.some(keyword => desc.includes(keyword));
-        }
-
+    
+        const isTarget = (user) => 
+            TARGET_AUDIENCE_KEYWORDS.some(k => (user.description || "").toLowerCase().includes(k));
+    
         const targetUsers = users.filter(isTarget);
-        const otherUsers = users.filter(u => !isTarget(u));
-
+        const otherUsers  = users.filter(u => !isTarget(u));
+    
         const win = window.open("", "_blank");
-        const html = `
-<html><head><title>Scraped Users</title></head>
-<body>
-  <h3>🎯 Target Audience To Follow</h3>
-  <ul style="list-style:none;padding:0;">
-    ${targetUsers.map(u => `
-      <li><a href="${u.link}" target="_blank">${u.username}</a><br>
-      <small>${u.description}</small></li>
-    `).join('')}
-  </ul>
-
-  <h3>👥 Other Users</h3>
-  <ul style="list-style:none;padding:0;">
-    ${otherUsers.map(u => `
-      <li><a href="${u.link}" target="_blank">${u.username}</a><br>
-      <small>${u.description}</small></li>
-    `).join('')}
-  </ul>
-</body></html>
-  `;
-        win.document.write(html);
-        win.document.close();
+    
+        win.document.title = "Scraped Users";
+    
+        const body = win.document.body;
+        const hTarget = win.document.createElement("h3");
+        hTarget.textContent = "🎯 Target Audience To Follow";
+        body.appendChild(hTarget);
+    
+        const ulTarget = win.document.createElement("ul");
+        ulTarget.style.listStyle = "none";
+        ulTarget.style.padding = "0";
+        targetUsers.forEach(u => {
+            const li = win.document.createElement("li");
+            li.innerHTML = `<a href="${u.link}" target="_blank">${u.username}</a><br><small>${u.description}</small>`;
+            ulTarget.appendChild(li);
+        });
+        body.appendChild(ulTarget);
+    
+        const hOther = win.document.createElement("h3");
+        hOther.textContent = "👥 Other Users";
+        body.appendChild(hOther);
+    
+        const ulOther = win.document.createElement("ul");
+        ulOther.style.listStyle = "none";
+        ulOther.style.padding = "0";
+        otherUsers.forEach(u => {
+            const li = win.document.createElement("li");
+            li.innerHTML = `<a href="${u.link}" target="_blank">${u.username}</a><br><small>${u.description}</small>`;
+            ulOther.appendChild(li);
+        });
+        body.appendChild(ulOther);
     }
+    
 
 
     async function scrollToBottomUntilTarget() {
