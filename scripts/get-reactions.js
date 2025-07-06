@@ -70,6 +70,7 @@
         win.document.title = "Scraped Users";
     
         const body = win.document.body;
+        body.style.backgroundColor = "#fff"; // forces white background
         const hTarget = win.document.createElement("h3");
         hTarget.textContent = "🎯 Target Audience To Follow";
         body.appendChild(hTarget);
