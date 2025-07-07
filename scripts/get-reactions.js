@@ -55,7 +55,7 @@
             " CDO ","Head of data","VP of data"," CTO ","Data manager","Director of Data",
             "databricks","snowflake","bigquery"," dbt ","spark","power bi","tableau",
             "data visualization","data pipeline","lakehouse","data lake","data warehouse",
-            "ingeniero de datos","analista", "engenheiro de dados"
+            "ingeniero de datos","analista", "engenheiro de dados", "data analysis"
         ].map(k => k.toLowerCase());
     
         const isTarget = (user) => 
