@@ -57,47 +57,118 @@
             "data visualization","data pipeline","lakehouse","data lake","data warehouse",
             "ingeniero de datos","analista", "engenheiro de dados", "data analysis"
         ].map(k => k.toLowerCase());
+
+        const DOUBT_TARGET_AUDIENCE_KEYWORDS = [
+            "engineer","software","architecture","data","cloud", "analyst","developer",
+            "devops", " IT ", " TI ", " sql ","python",
+            "consultant", "azure", " aws ", " gcp ", "google cloud",
+            "machine learning", "ml engineer", 
+        ].map(k => k.toLowerCase());
     
         const isTarget = (user) => 
             TARGET_AUDIENCE_KEYWORDS.some(k => (user.description || "").toLowerCase().includes(k));
+        const isDoubtTarget = (user) => 
+            DOUBT_TARGET_AUDIENCE_KEYWORDS.some(k => (user.description || "").toLowerCase().includes(k));
         
     
         const targetUsers = users.filter(isTarget);
-        const otherUsers  = users.filter(u => !isTarget(u));
+        const doubtTargetUsers = users.filter(u => !isTarget(u) && isDoubtTarget(u));
+        const otherUsers  = users.filter(u => !isTarget(u) && !isDoubtTarget(u));
     
         const win = window.open("", "_blank");
+        const doc = win.document;
     
-        win.document.title = "Scraped Users";
+        document.title = "Scraped Users";
     
-        const body = win.document.body;
+        const body = doc.body;
         body.style.backgroundColor = "#fff"; // forces white background
-        const hTarget = win.document.createElement("h3");
+        const hTarget = doc.createElement("h3");
         hTarget.textContent = "🎯 Target Audience To Follow";
         body.appendChild(hTarget);
     
-        const ulTarget = win.document.createElement("ul");
+        const ulTarget = doc.createElement("ul");
         ulTarget.style.listStyle = "none";
         ulTarget.style.padding = "0";
         targetUsers.forEach(u => {
-            const li = win.document.createElement("li");
-            li.innerHTML = `<a href="${u.link}" target="_blank">${u.username}</a><br><small>${u.description}</small>`;
+            const li = doc.createElement("li");
+    
+            const a = doc.createElement("a");
+            a.href = u.link;
+            a.target = "_blank";
+            a.textContent = u.username;
+    
+            const br = doc.createElement("br");
+            const small = doc.createElement("small");
+            small.textContent = u.description;
+    
+            li.appendChild(a);
+            li.appendChild(br);
+            li.appendChild(small);
+    
             ulTarget.appendChild(li);
         });
         body.appendChild(ulTarget);
+
+
+        const hDoubt = doc.createElement("h3");
+        hDoubt.textContent = "❓ Doubt Users";
+        body.appendChild(hDoubt);
     
-        const hOther = win.document.createElement("h3");
+        const ulDoubt = doc.createElement("ul");
+        ulDoubt.style.listStyle = "none";
+        ulDoubt.style.padding = "0";
+        doubtTargetUsers.forEach(u => {
+            const li = doc.createElement("li");
+    
+            const a = doc.createElement("a");
+            a.href = u.link;
+            a.target = "_blank";
+            a.textContent = u.username;
+    
+            const br = doc.createElement("br");
+            const small = doc.createElement("small");
+            small.textContent = u.description;
+    
+            li.appendChild(a);
+            li.appendChild(br);
+            li.appendChild(small);
+    
+            ulDoubt.appendChild(li);
+        });
+        body.appendChild(ulDoubt);
+
+    
+        const hOther = doc.createElement("h3");
         hOther.textContent = "👥 Other Users";
         body.appendChild(hOther);
     
-        const ulOther = win.document.createElement("ul");
+        const ulOther = doc.createElement("ul");
         ulOther.style.listStyle = "none";
         ulOther.style.padding = "0";
         otherUsers.forEach(u => {
-            const li = win.document.createElement("li");
-            li.innerHTML = `<a href="${u.link}" target="_blank">${u.username}</a><br><small>${u.description}</small>`;
+            const li = doc.createElement("li");
+    
+            const a = doc.createElement("a");
+            a.href = u.link;
+            a.target = "_blank";
+            a.textContent = u.username;
+    
+            const br = doc.createElement("br");
+            const small = doc.createElement("small");
+            small.textContent = u.description;
+    
+            li.appendChild(a);
+            li.appendChild(br);
+            li.appendChild(small);
+    
             ulOther.appendChild(li);
         });
         body.appendChild(ulOther);
+
+        // 📋 Add raw JSON at the end
+        const pre = doc.createElement("pre");
+        pre.textContent = JSON.stringify(otherUsers);
+        body.appendChild(pre);
     }
     
 
