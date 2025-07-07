@@ -52,6 +52,8 @@
         return "data engineering";
     }
 
+    const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
     function fillMessage() {
 
         const messageBox = document.querySelector('[contenteditable="true"]');
@@ -60,7 +62,7 @@
 
         if (!messageBox || !nameEl) return;
 
-        const name = nameEl.textContent.trim().split(' ')[0];
+        const name = capitalize(nameEl.textContent.trim().split(' ')[0]);
         const description = descriptionEl.textContent.trim();
         const area = prompt("Enter area:", getDefaultArea(description));
         const lang = prompt("Enter lang:", "en");
