@@ -55,10 +55,10 @@
     const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
     function fillMessage() {
-
-        const messageBox = document.querySelector('[contenteditable="true"]');
-        const nameEl = document.querySelector('.profile-card-one-to-one__profile-link');
-        const descriptionEl = document.querySelector('.artdeco-entity-lockup__subtitle');
+        const parent = document.querySelector('#interop-outlet').shadowRoot
+        const messageBox = parent.querySelector('div[aria-label="Write a message…"]')
+        const nameEl = parent.querySelector('.profile-card-one-to-one__profile-link');
+        const descriptionEl = parent.querySelector('.artdeco-entity-lockup__subtitle');
 
         if (!messageBox || !nameEl) return;
 
