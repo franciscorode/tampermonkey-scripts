@@ -80,9 +80,9 @@
             }
         } else {
             if (type === "worker") {
-                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones significativas en el ámbito de datos y encontré tu experiencia en ${area} muy interesante. Genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu experiencia en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
             } else {
-                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones significativas en el ámbito de datos y tu interes en ${area} me pareció muy interesante. Genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu interes en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
             }
         }
 
