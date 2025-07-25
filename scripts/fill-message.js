@@ -56,7 +56,7 @@
 
     function fillMessage() {
         const parent = document.querySelector('#interop-outlet').shadowRoot
-        const messageBox = parent.querySelector('div[aria-label="Write a message…"]')
+        const messageBox = parent.querySelector('[contenteditable="true"]');
         const nameEl = parent.querySelector('.profile-card-one-to-one__profile-link');
         const descriptionEl = parent.querySelector('.artdeco-entity-lockup__subtitle');
 
