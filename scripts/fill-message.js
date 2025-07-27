@@ -22,9 +22,12 @@
         const biKeywords = ["bi", "business intelligence", "reporting"];
         const leadKeywords = ["cdo", "head of data", "director of data", "vp of data", "cto", "data manager"]
 
-        if (leadKeywords.some(k => desc.includes(k))) {
-            return "in leadind data projects";
-        }
+        if (
+            leadKeywords.some(k => desc.includes(k)) &&
+            !["factory"].some(ex => desc.includes(ex))
+          ) {
+            return "leading data projects";
+          }
 
         if (["data governance"].some(k => desc.includes(k))) {
             return "data governance";
