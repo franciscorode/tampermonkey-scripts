@@ -50,19 +50,20 @@
     function openUserListMinimal(users) {
         const TARGET_AUDIENCE_KEYWORDS = [
             "data engineer","dataops"," etl ","data engineering","bigdata",
-            "big data","analytics","data analyst"," BI ","business intelligence",
+            "big data","data analyst"," BI ","business intelligence",
             "data architect","data governance","data modeling","data management",
             " CDO ","Head of data","VP of data"," CTO ","Data manager","Director of Data",
             "databricks","snowflake","bigquery"," dbt ","spark","power bi","tableau",
-            "data visualization","data pipeline","lakehouse","data lake","data warehouse",
-            "ingeniero de datos","analista", "engenheiro de dados", "data analysis"
+            "data visualization","data pipeline","lakehouse","data lake","data warehouse", "Datawarehouse", "datalake",
+            "ingeniero de datos", "engenheiro de dados", "data analysis", "Airflow", "Engenheira de Dados",
+            "Data Quality"
         ].map(k => k.toLowerCase());
 
         const DOUBT_TARGET_AUDIENCE_KEYWORDS = [
             "engineer","software","architecture","data","cloud", "analyst","developer",
             "devops", " IT ", " TI ", " sql ","python",
-            "consultant", "azure", " aws ", " gcp ", "google cloud",
-            "machine learning", "ml engineer", 
+            "consultant", "azure", " aws ", " gcp ", "google cloud", "analytics",
+            "machine learning", "ml engineer", "analista", "Governance"
         ].map(k => k.toLowerCase());
     
         const isTarget = (user) => 
