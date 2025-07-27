@@ -56,7 +56,7 @@
             "databricks","snowflake","bigquery"," dbt ","spark","power bi","tableau",
             "data visualization","data pipeline","lakehouse","data lake","data warehouse", "Datawarehouse", "datalake",
             "ingeniero de datos", "engenheiro de dados", "data analysis", "Airflow", "Engenheira de Dados",
-            "Data Quality"
+            "Data Quality", "data platform"
         ].map(k => k.toLowerCase());
 
         const DOUBT_TARGET_AUDIENCE_KEYWORDS = [
