@@ -11,14 +11,16 @@
 (function() {
     'use strict';
 
+    const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
     const CANNED = [
-        'You are welcome',
-        'Great',
-        'Great! we keep in touch',
-        'Genial! estamos en contacto',
-        'Genial',
-        'Igualmente',
-        'De nada'
+        'You are welcome [NAME] :)',
+        'Great :)',
+        'Great [NAME]! we keep in touch :)',
+        'Genial [NAME]! estamos en contacto :)',
+        'Genial :)',
+        'Igualmente [NAME] :)',
+        'De nada [NAME] :)'
     ];
 
     let isButtonInjected = false;
@@ -56,14 +58,22 @@
         menu.style.top = 0;
         menu.style.left = 0;
 
+        const nameEl = document.querySelector('.msg-entity-lockup__entity-title');
+        if (!nameEl) {
+            console.warn("No name element found, cannot personalize messages.");
+            return
+        }
+        const name = capitalize(nameEl.textContent.trim().split(' ')[0]);
+
         CANNED.forEach(text => {
+            const personalizedText = text.replace(/\[NAME\]/g, name);
             const item = document.createElement('div');
-            item.textContent = text;
+            item.textContent = personalizedText;
             item.style.padding = '4px 4px';
             item.style.fontSize = '14px';
             item.style.cursor = 'pointer';
             item.addEventListener('click', () => {
-                insertMessage(text);
+                insertMessage(personalizedText);
                 menu.style.display = 'none';
             });
             item.addEventListener('mouseenter', () => item.style.background = '#f0f0f0');
