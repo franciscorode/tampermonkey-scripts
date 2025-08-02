@@ -77,15 +77,15 @@
 
         if (lang === "en") {
             if (type === "worker") {
-                message = `Hey ${name}, I'm glad you liked the post. I'm building meaningful connections in the data space and found your experience in ${area} very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
+                message = `Hey ${name}, thanks for the reaction! I'm building meaningful connections in the data space and found your experience in ${area} very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
             } else {
-                message = `Hey ${name}, I'm glad you liked the post. I'm building meaningful connections in the data space and your interest in ${area} caught my attention. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
+                message = `Hey ${name}, thanks for the reaction! I'm building meaningful connections in the data space and your interest in ${area} caught my attention. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
             }
         } else {
             if (type === "worker") {
-                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu experiencia en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+                message = `Hola ${name}, gracias por la reacción! Estoy construyendo conexiones genuinas en el área de datos y tu experiencia en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
             } else {
-                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu interes en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+                message = `Hola ${name}, gracias por la reacción!. Estoy construyendo conexiones genuinas en el área de datos y tu interes en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
             }
         }
 
