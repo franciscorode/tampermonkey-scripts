@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add user to Notion</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        button { padding: 8px 16px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        select { padding: 4px; }
+        p { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h2>Add user to Notion</h2>
+    <p>Name: <span id="name"></span></p>
+    <p>LinkedIn URL: <a id="url" href="#" target="_blank"></a></p>
+    <label for="database">Select Database:</label>
+    <select id="database">
+        <option value="data">data</option>
+        <option value="fran">fran</option>
+        <option value="victor">victor</option>
+    </select>
+    <br><br>
+    <button id="createBtn">Create in Notion</button>
+    <p id="status"></p>
+
+    <script src="popup-script.js"></script>
+</body>
+</html>
