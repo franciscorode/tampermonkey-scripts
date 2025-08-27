@@ -8,6 +8,8 @@
 // @match        https://www.linkedin.com/posts/*
 // @match        https://www.linkedin.com/feed/?highlightedUpdateType*
 // @grant        none
+// @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/reply-comment.js
+// @downloadURL  https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/reply-comment.js
 // ==/UserScript==
 
 (function() {

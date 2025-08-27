@@ -6,6 +6,8 @@
 // @author       ChatGPT
 // @match        https://www.linkedin.com/messaging/*
 // @grant        none
+// @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/canned-replies-button.js
+// @downloadURL  https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/canned-replies-button.js
 // ==/UserScript==
 
 (function() {
