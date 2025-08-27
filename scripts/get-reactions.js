@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
-// @match        https://www.linkedin.com/*
+// @match        https://www.linkedin.com/in/*/recent-activity/all/
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/get-reactions.js
@@ -110,14 +110,16 @@
             "databricks","snowflake","bigquery"," dbt ","spark","power bi","tableau",
             "data visualization","data pipeline","lakehouse","data lake","data warehouse", "Datawarehouse", "datalake",
             "ingeniero de datos", "engenheiro de dados", "data analysis", "Airflow", "Engenheira de Dados",
-            "Data Quality", "data platform"
+            "Data Quality", "data platform", "Ingeniería de Datos", "Data Steward", "Data Visualisation", "data analytics",
+            "BI Engineer"
+
         ].map(k => k.toLowerCase());
 
         const DOUBT_TARGET_AUDIENCE_KEYWORDS = [
             "engineer","software","architecture","data","cloud", "analyst","developer",
             "devops", " IT ", " TI ", " sql ","python",
             "consultant", "azure", " aws ", " gcp ", "google cloud", "analytics",
-            "machine learning", "ml engineer", "analista", "Governance"
+            "machine learning", "ml engineer", "analista", "Governance", "Data enthusiast"
         ].map(k => k.toLowerCase());
 
         const isTarget = (user) =>
