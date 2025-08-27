@@ -65,4 +65,6 @@
         }
     });
 
+    console.log("✅ LinkedIn buttons for comments loaded");
+
 })();

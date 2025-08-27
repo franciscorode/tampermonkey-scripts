@@ -137,4 +137,6 @@
         }
     }, 500); // checks every 0.5s
 
+    console.log("✅ LinkedIn canned replies button loaded");
+
 })();

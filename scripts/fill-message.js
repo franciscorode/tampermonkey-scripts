@@ -95,7 +95,7 @@
         console.log("Inserted message: ", message);
     }
 
-    console.log("Loading script");
+    console.log("✅ LinkedIn fill first messages loaded");
     // Add a keyboard shortcut: Ctrl+Shift+M
     document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'm') {

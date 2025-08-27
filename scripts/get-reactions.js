@@ -364,7 +364,7 @@
         openUserListMinimal(newNoConnectionUsers)
     }
 
-    console.log("✅ Tampermonkey LinkedIn Reactions Scraper loaded");
+    console.log("✅ LinkedIn reactions tracker loaded");
     // Add a keyboard shortcut: Ctrl+Shift+N
     document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'n') {
