@@ -43,9 +43,17 @@
         console.log("Posts lenght: ", posts.length)
 
         posts.forEach(post => {
+            const commentButton = post.querySelector('#tm-comment-btn');
+            if (commentButton) {
+                return; // skips to the next post
+            }
             const postTextEl = post.querySelector('.feed-shared-inline-show-more-text');
+            if (!postTextEl) {
+                return; // skips no posts containers
+            }
             const postText = postTextEl?.querySelector('div').textContent.trim();
             const btn = document.createElement('button');
+            btn.id = 'tm-comment-btn';
             btn.textContent = '📋';
             btn.title = 'Copy prompt to generate comment'
             btn.style.marginInline = '2.7%';
