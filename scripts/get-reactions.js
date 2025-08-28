@@ -138,6 +138,29 @@
 
         const body = doc.body;
         body.style.backgroundColor = "#fff"; // forces white background
+
+        // ➕ Add Download Button at the top
+        const downloadBtn = doc.createElement("button");
+        downloadBtn.textContent = "⬇️ Download HTML";
+        downloadBtn.style.padding = "6px 12px";
+        downloadBtn.style.border = "1px solid #ccc";
+        downloadBtn.style.borderRadius = "6px";
+        downloadBtn.style.cursor = "pointer";
+        downloadBtn.addEventListener("click", () => {
+            const htmlContent = "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: "text/html" });
+            const url = URL.createObjectURL(blob);
+
+            const a = doc.createElement("a");
+            a.href = url;
+            a.download = "scraped_users.html";
+            doc.body.appendChild(a);
+            a.click();
+            doc.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        body.appendChild(downloadBtn);
+
         const hTarget = doc.createElement("h3");
         hTarget.textContent = "🎯 Target Audience To Follow";
         body.appendChild(hTarget);
@@ -225,6 +248,7 @@
         const pre = doc.createElement("pre");
         pre.textContent = JSON.stringify(otherUsers);
         body.appendChild(pre);
+
     }
 
 
