@@ -253,6 +253,10 @@
 
 
 
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
     async function scrollToBottomUntilTarget() {
         const scrollContainer = document.querySelector(
             '.artdeco-modal__content ,social-details-reactors-modal__content'
@@ -261,23 +265,27 @@
             console.error("❌ Scrollable container not found.");
             return;
         }
-
+    
         console.log("✅ Found scroll container:", scrollContainer);
-
+    
         let previousHeight = 0;
         let attempts = 0;
-        const MAX_ATTEMPTS = 50;
-
+        const MAX_ATTEMPTS = 100;
+    
         while (attempts < MAX_ATTEMPTS) {
             scrollContainer.scrollTop = scrollContainer.scrollHeight;
             scrollContainer.dispatchEvent(new Event('scroll', { bubbles: true }));
-            await sleep(1500);
+    
+            // Random wait between 1s and 3s
+            const waitTime = Math.floor(Math.random() * 2000) + 1000; 
+            await sleep(waitTime);
+    
             attempts++;
-            console.log(`⬇️ Scrolled attempt #${attempts}`);
-
+            console.log(`⬇️ Scrolled attempt #${attempts} (waited ${waitTime}ms)`);
+    
             const users = [...scrollContainer.querySelectorAll('.reactions-reactor-list-item')];
             const names = users.map(u => u.querySelector('span[dir]')?.textContent.trim());
-
+    
             if (scrollContainer.scrollHeight === previousHeight) {
                 console.log("📄 No more content to load.");
                 break;
