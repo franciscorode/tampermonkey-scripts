@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to make comments on LinkedIn posts
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Adds a button to copy AI prompt to generate comments to a post
 // @author       ChatGPT
 // @match        https://www.linkedin.com/feed/*
@@ -43,7 +43,7 @@
         console.log("Posts lenght: ", posts.length)
 
         posts.forEach(post => {
-            const commentButton = post.querySelector('#tm-comment-btn');
+            const commentButton = post.querySelector('.tm-comment-btn');
             if (commentButton) {
                 return; // skips to the next post
             }
@@ -53,7 +53,7 @@
             }
             const postText = postTextEl?.querySelector('div').textContent.trim();
             const btn = document.createElement('button');
-            btn.id = 'tm-comment-btn';
+            btn.class = 'tm-comment-btn';
             btn.textContent = '📋';
             btn.title = 'Copy prompt to generate comment'
             btn.style.marginInline = '2.7%';
