@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Message Template Filler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.1
+// @version      0.1.2
 // @description  Auto-fill LinkedIn message template with name and area
 // @match        https://www.linkedin.com/mynetwork/invite-connect/connections/
 // @grant        none
@@ -55,6 +55,20 @@
         return "data engineering";
     }
 
+    async function typeLikeHuman(element, text) {
+        element.focus();
+
+        // Simulate first 6 characters
+        for (let char of text.slice(0, 6)) {
+            document.execCommand("insertText", false, char);
+            await new Promise(r => setTimeout(r, 50 + Math.random() * 120));
+        }
+
+        // Paste the rest instantly
+        document.execCommand("insertText", false, text.slice(6));
+        console.log("Inserted message:", text);
+    }
+
     const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
     function fillMessage() {
@@ -89,10 +103,8 @@
             }
         }
 
-        messageBox.focus();
-        console.log("Focused box");
-        document.execCommand('insertText', false, message);
-        console.log("Inserted message: ", message);
+        typeLikeHuman(messageBox, message);
+
     }
 
     console.log("✅ LinkedIn fill first messages loaded");
