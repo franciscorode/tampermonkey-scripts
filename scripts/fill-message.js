@@ -69,23 +69,23 @@
         const description = descriptionEl.textContent.trim();
         const area = prompt("Enter area:", getDefaultArea(description));
         const lang = prompt("Enter lang:", "en");
-        const type = prompt("Enter type (student | worker):", "worker");
+        const type = prompt("Enter type: w (worker) | s (student)", "w");
 
         if (!area | !lang | !type) return;
 
         let message = ""
 
         if (lang === "en") {
-            if (type === "worker") {
-                message = `Hey ${name}, thanks for the reaction! I'm building meaningful connections in the data space and found your experience in ${area} very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
+            if (type === "w") {
+                message = `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the data space and found your experience in ${area} very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
             } else {
-                message = `Hey ${name}, thanks for the reaction! I'm building meaningful connections in the data space and your interest in ${area} caught my attention. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
+                message = `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the data space and your interest in ${area} caught my attention. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
             }
         } else {
-            if (type === "worker") {
-                message = `Hola ${name}, gracias por la reacción! Estoy construyendo conexiones genuinas en el área de datos y tu experiencia en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+            if (type === "w") {
+                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu experiencia en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
             } else {
-                message = `Hola ${name}, gracias por la reacción!. Estoy construyendo conexiones genuinas en el área de datos y tu interes en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu interes en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
             }
         }
 
