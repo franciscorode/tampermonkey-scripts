@@ -153,7 +153,7 @@
 
             const a = doc.createElement("a");
             a.href = url;
-            a.download = "scraped_users.html";
+            a.download = `${currentPostId} - scraped_users.html`;
             doc.body.appendChild(a);
             a.click();
             doc.body.removeChild(a);
