@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Message Template Filler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.2
+// @version      0.1.3
 // @description  Auto-fill LinkedIn message template with name and area
 // @match        https://www.linkedin.com/mynetwork/invite-connect/connections/
 // @grant        none
@@ -16,9 +16,8 @@
         const desc = description.toLowerCase();
         console.log("description: ", description)
 
-        const dataEngineeringKeywords = ["data engineering", "data engineer", "dataops", "etl", "bigdata", "big data", "databricks", "snowflake", "spark", "bigquery", "data pipeline", "ingeniero de datos"];
-        const dataAnalyticsKeywords = ["data analytics", "data analyst", "powerbi", "power bi", "tableau", "data visualization", "sql"];
-        const dataArchKeywords = ["data architecture", "data warehouse", "data warehousing", "lakehouse", "data lake"];
+        const dataEngineeringKeywords = ["data engineering", "data engineer", "dataops", "etl", "bigdata", "big data", "databricks", "snowflake", "spark", "bigquery", "data pipeline", "ingeniero de datos", "data architecture", "data warehouse", "data warehousing", "lakehouse", "data lake", "Data Eng", "Arquitectura de Datos"];
+        const dataAnalyticsKeywords = ["data analytics", "data analyst", "powerbi", "power bi", "tableau", "data visualization", "sql", "Data & Analytics", "Analytics Engineer"];
         const biKeywords = ["bi", "business intelligence", "reporting"];
         const leadKeywords = ["cdo", "head of data", "director of data", "vp of data", "cto", "data manager"]
 
@@ -35,10 +34,6 @@
 
         if (["data management"].some(k => desc.includes(k))) {
             return "data management";
-        }
-
-        if (dataArchKeywords.some(k => desc.includes(k))) {
-            return "data architecture";
         }
 
         if (dataEngineeringKeywords.some(k => desc.includes(k))) {

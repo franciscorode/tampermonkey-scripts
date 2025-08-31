@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/all/
@@ -111,15 +111,16 @@
             "data visualization","data pipeline","lakehouse","data lake","data warehouse", "Datawarehouse", "datalake",
             "ingeniero de datos", "engenheiro de dados", "data analysis", "Airflow", "Engenheira de Dados",
             "Data Quality", "data platform", "Ingeniería de Datos", "Data Steward", "Data Visualisation", "data analytics",
-            "BI Engineer"
-
+            "BI Engineer", "Arquitectura de Datos", "Data Eng", "Analytics Engineer", "Data Enthusiast", 
+            "Data & Analytics", "Analytics Engineer"
         ].map(k => k.toLowerCase());
 
         const DOUBT_TARGET_AUDIENCE_KEYWORDS = [
             "engineer","software","architecture","data","cloud", "analyst","developer",
             "devops", " IT ", " TI ", " sql ","python",
             "consultant", "azure", " aws ", " gcp ", "google cloud", "analytics",
-            "machine learning", "ml engineer", "analista", "Governance", "Data enthusiast"
+            "machine learning", "ml engineer", "analista", "Governance", "Data enthusiast", "Alteryx",
+            "Data Specialist"
         ].map(k => k.toLowerCase());
 
         const isTarget = (user) =>
