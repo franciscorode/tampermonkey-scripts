@@ -258,7 +258,7 @@
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     
-    async function scrollToBottomUntilTarget() {
+    async function scrollToBottomUntilEnds() {
         const scrollContainer = document.querySelector(
             '.artdeco-modal__content ,social-details-reactors-modal__content'
         );
@@ -271,7 +271,7 @@
     
         let previousHeight = 0;
         let attempts = 0;
-        const MAX_ATTEMPTS = 100;
+        const MAX_ATTEMPTS = 200;
     
         while (attempts < MAX_ATTEMPTS) {
             scrollContainer.scrollTop = scrollContainer.scrollHeight;
@@ -284,9 +284,6 @@
             attempts++;
             console.log(`⬇️ Scrolled attempt #${attempts} (waited ${waitTime}ms)`);
     
-            const users = [...scrollContainer.querySelectorAll('.reactions-reactor-list-item')];
-            const names = users.map(u => u.querySelector('span[dir]')?.textContent.trim());
-    
             if (scrollContainer.scrollHeight === previousHeight) {
                 console.log("📄 No more content to load.");
                 break;
@@ -295,16 +292,15 @@
         }
     }
 
-
     function getUsersAroundTarget(targetUsername) {
         const modalContent = document.querySelector('.artdeco-modal');
         const items = [...modalContent.querySelectorAll('.artdeco-list__item')];
         console.log(`User items: ${items.length}`);
-
+    
         const beforeTarget = [];
         const afterTarget = [];
         let foundTarget = false;
-
+    
         for (const item of items) {
             let nameElem = item.querySelector('span[dir]');
             if (!nameElem) {
@@ -313,28 +309,35 @@
             }
             const descElem = item.querySelector('.artdeco-entity-lockup__caption');
             const linkElem = item.querySelector('a[href*="/in/"]');
-
+    
             const username = nameElem?.textContent.trim();
-
             if (!username) continue;
-
+    
             const user = {
                 username,
                 description: descElem?.textContent.trim() || '',
                 link: linkElem ? linkElem.href : ''
             };
-
+    
             if (!foundTarget) {
                 beforeTarget.push(user);
             } else {
                 afterTarget.push(user);
             }
-
+    
             if (username === targetUsername) {
                 foundTarget = true;
             }
         }
-
+    
+        // If target was not found, move all users to 'after' (no connections)
+        if (!foundTarget) {
+            return {
+                before: [],
+                after: [...beforeTarget] // everything goes into after
+            };
+        }
+    
         return {
             before: beforeTarget,
             after: afterTarget
@@ -365,7 +368,7 @@
 
         console.log(`Post ID: ${postId}`);
 
-        await scrollToBottomUntilTarget();
+        await scrollToBottomUntilEnds();
         console.log("Done scroll");
 
         const allUsers = getUsersAroundTarget(TARGET_USERNAME);
