@@ -74,8 +74,6 @@
         return currentPostId;
     }
 
-    const TARGET_USERNAME = 'Alexander D';
-
     async function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -283,9 +281,7 @@
         const pre = doc.createElement("pre");
         pre.textContent = JSON.stringify(otherUsers);
         body.appendChild(pre);
-
     }
-
 
 
     function sleep(ms) {
@@ -326,14 +322,13 @@
         }
     }
 
-    function getUsersAroundTarget(targetUsername) {
+    function getReactors() {
         const modalContent = document.querySelector('.artdeco-modal');
         const items = [...modalContent.querySelectorAll('.artdeco-list__item')];
         console.log(`User items: ${items.length}`);
     
-        const beforeTarget = [];
-        const afterTarget = [];
-        let foundTarget = false;
+        const connections = [];
+        const noConnections = [];
     
         for (const item of items) {
             let nameElem = item.querySelector('span[dir]');
@@ -343,6 +338,7 @@
             }
             const descElem = item.querySelector('.artdeco-entity-lockup__caption');
             const linkElem = item.querySelector('a[href*="/in/"]');
+            const connectionDegreeEl = item.querySelector('.artdeco-entity-lockup__degree');
     
             const username = nameElem?.textContent.trim();
             if (!username) continue;
@@ -352,29 +348,17 @@
                 description: descElem?.textContent.trim() || '',
                 link: linkElem ? linkElem.href : ''
             };
-    
-            if (!foundTarget) {
-                beforeTarget.push(user);
+
+            const isConnection = connectionDegreeEl.textContent.trim().includes('1er');
+            if (isConnection) {
+                connections.push(user);
             } else {
-                afterTarget.push(user);
-            }
-    
-            if (username === targetUsername) {
-                foundTarget = true;
+                noConnections.push(user);
             }
         }
-    
-        // If target was not found, move all users to 'after' (no connections)
-        if (!foundTarget) {
-            return {
-                before: [],
-                after: [...beforeTarget] // everything goes into after
-            };
-        }
-    
         return {
-            before: beforeTarget,
-            after: afterTarget
+            connections: connections,
+            noConnections: noConnections
         };
     }
 
@@ -405,14 +389,11 @@
         await scrollToBottomUntilEnds();
         console.log("Done scroll");
 
-        const allUsers = getUsersAroundTarget(TARGET_USERNAME);
+        const allUsers = getReactors();
         const alreadyStored = getStoredUsernames(postId);
 
-        const noConnectionUsers = allUsers.after
-        const connectionUsers = allUsers.before
-
-        let newNoConnectionUsers = noConnectionUsers.filter(u => !alreadyStored.includes(u.username));
-        let newConnectionUsers = connectionUsers.filter(u => !alreadyStored.includes(u.username));
+        let newNoConnectionUsers = allUsers.noConnections.filter(u => !alreadyStored.includes(u.username));
+        let newConnectionUsers = allUsers.connections.filter(u => !alreadyStored.includes(u.username));
 
         console.log("New no connected users that reacted: ", newNoConnectionUsers.length)
         console.log("New already connected users that reacted: ", newConnectionUsers.length)
