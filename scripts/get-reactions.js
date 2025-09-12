@@ -5,6 +5,7 @@
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/all/
+// @match        https://www.linkedin.com/posts/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/get-reactions.js
@@ -15,6 +16,38 @@
     'use strict';
 
     let currentPostId = null;
+
+    const VICTOR_TARGET_AUDIENCE_KEYWORDS = [
+        "data engineer","dataops"," etl ","data engineering","bigdata",
+        "big data","data analyst"," BI ","business intelligence",
+        "data architect","data governance","data modeling","data management",
+        " CDO ","Head of data","VP of data"," CTO ","Data manager","Director of Data",
+        "databricks","snowflake","bigquery"," dbt ","spark","power bi","tableau",
+        "data visualization","data pipeline","lakehouse","data lake","data warehouse", "Datawarehouse", "datalake",
+        "ingeniero de datos", "engenheiro de dados", "data analysis", "Airflow", "Engenheira de Dados",
+        "Data Quality", "data platform", "Ingeniería de Datos", "Data Steward", "Data Visualisation", "data analytics",
+        "BI Engineer", "Arquitectura de Datos", "Data Eng", "Analytics Engineer", "Data Enthusiast", 
+        "Data & Analytics", "Analytics Engineer"
+    ].map(k => k.toLowerCase());
+
+    const VICTOR_DOUBT_TARGET_AUDIENCE_KEYWORDS = [
+        "engineer","software","architecture","data","cloud", "analyst","developer",
+        "devops", " IT ", " TI ", " sql ","python",
+        "consultant", "azure", " aws ", " gcp ", "google cloud", "analytics",
+        "machine learning", "ml engineer", "analista", "Governance", "Data enthusiast", "Alteryx",
+        "Data Specialist"
+    ].map(k => k.toLowerCase());
+
+    const FRAN_TARGET_AUDIENCE_KEYWORDS = [
+        "ai engineer","genai","CTO","CDO","head of data", "head of ai", "Agentic AI", "AI Architect",
+        "ai agent", "VP of data", "chief data officer", "chief technology officer", "director of data",
+        "director of ai", "VP of ai", "AI product manager", "AI strateg", "generative AI", "AI software",
+        "chief AI officer"
+    ].map(k => k.toLowerCase());
+    const FRAN_DOUBT_TARGET_AUDIENCE_KEYWORDS = [
+        "full stack", "fullstack", "engineer", "software", "developer", " ai ", "founder", "co-founder",
+    ].map(k => k.toLowerCase());
+
 
     function setupReactionButtonListeners() {
         document.body.addEventListener('click', function (e) {
@@ -41,7 +74,7 @@
         return currentPostId;
     }
 
-    const TARGET_USERNAME = 'Francisco Rodeño Sanchez';
+    const TARGET_USERNAME = 'Alexander D';
 
     async function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -102,31 +135,32 @@
     }
 
     function openUserListMinimal(users) {
-        const TARGET_AUDIENCE_KEYWORDS = [
-            "data engineer","dataops"," etl ","data engineering","bigdata",
-            "big data","data analyst"," BI ","business intelligence",
-            "data architect","data governance","data modeling","data management",
-            " CDO ","Head of data","VP of data"," CTO ","Data manager","Director of Data",
-            "databricks","snowflake","bigquery"," dbt ","spark","power bi","tableau",
-            "data visualization","data pipeline","lakehouse","data lake","data warehouse", "Datawarehouse", "datalake",
-            "ingeniero de datos", "engenheiro de dados", "data analysis", "Airflow", "Engenheira de Dados",
-            "Data Quality", "data platform", "Ingeniería de Datos", "Data Steward", "Data Visualisation", "data analytics",
-            "BI Engineer", "Arquitectura de Datos", "Data Eng", "Analytics Engineer", "Data Enthusiast", 
-            "Data & Analytics", "Analytics Engineer"
-        ].map(k => k.toLowerCase());
+        let linkedinUser = GM_getValue("LINKEDIN_USER");
+        if (!linkedinUser) {
+            linkedinUser = prompt("Enter LINKEDIN_USER (victor | fran)", "victor");
+            if (!linkedinUser) return;
+            if (linkedinUser !== "victor" && linkedinUser !== "fran") return;
+            GM_setValue("LINKEDIN_USER", linkedinUser);
+        }
 
-        const DOUBT_TARGET_AUDIENCE_KEYWORDS = [
-            "engineer","software","architecture","data","cloud", "analyst","developer",
-            "devops", " IT ", " TI ", " sql ","python",
-            "consultant", "azure", " aws ", " gcp ", "google cloud", "analytics",
-            "machine learning", "ml engineer", "analista", "Governance", "Data enthusiast", "Alteryx",
-            "Data Specialist"
-        ].map(k => k.toLowerCase());
+        let targetAudienceKeywords = [];
+        let doubtTargetAudienceKeywords = [];
+
+        if (linkedinUser === "victor") {
+            targetAudienceKeywords = VICTOR_TARGET_AUDIENCE_KEYWORDS;
+            doubtTargetAudienceKeywords = VICTOR_DOUBT_TARGET_AUDIENCE_KEYWORDS;
+        } else if (linkedinUser === "fran") {
+            targetAudienceKeywords = FRAN_TARGET_AUDIENCE_KEYWORDS;
+            doubtTargetAudienceKeywords = FRAN_DOUBT_TARGET_AUDIENCE_KEYWORDS;
+        } else {
+            console.error("Unknown LINKEDIN_USER:", linkedinUser);
+            return;
+        }
 
         const isTarget = (user) =>
-            TARGET_AUDIENCE_KEYWORDS.some(k => (user.description || "").toLowerCase().includes(k));
+            targetAudienceKeywords.some(k => (user.description || "").toLowerCase().includes(k));
         const isDoubtTarget = (user) =>
-            DOUBT_TARGET_AUDIENCE_KEYWORDS.some(k => (user.description || "").toLowerCase().includes(k));
+            doubtTargetAudienceKeywords.some(k => (user.description || "").toLowerCase().includes(k));
 
         const targetUsers = users.filter(isTarget);
         const doubtTargetUsers = users.filter(u => !isTarget(u) && isDoubtTarget(u));

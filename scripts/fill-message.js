@@ -4,7 +4,8 @@
 // @version      0.1.3
 // @description  Auto-fill LinkedIn message template with name and area
 // @match        https://www.linkedin.com/mynetwork/invite-connect/connections/
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/fill-message.js
 // @downloadURL  https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/fill-message.js
 // ==/UserScript==
@@ -12,9 +13,11 @@
 (function () {
     'use strict';
 
-    function getDefaultArea(description) {
+    function getDefaultArea(description, linkedinUser) {
+        if (linkedinUser === "fran") {
+            return "genai";
+        }
         const desc = description.toLowerCase();
-        console.log("description: ", description)
 
         const dataEngineeringKeywords = ["data engineering", "data engineer", "dataops", "etl", "bigdata", "big data", "databricks", "snowflake", "spark", "bigquery", "data pipeline", "ingeniero de datos", "data architecture", "data warehouse", "data warehousing", "lakehouse", "data lake", "Data Eng", "Arquitectura de Datos"];
         const dataAnalyticsKeywords = ["data analytics", "data analyst", "powerbi", "power bi", "tableau", "data visualization", "sql", "Data & Analytics", "Analytics Engineer"];
@@ -66,7 +69,34 @@
 
     const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
+    function getMessage(name, area, lang, type, linkedinUser) {
+        if (linkedinUser === "fran") {
+            if (lang === "en") {
+                return `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the ${area} and found your profile very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
+            }
+            return `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de ${area} y tu perfile me ha parecido interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+        }
+        if (lang === "en") {
+            if (type === "w") {
+                return `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the data space and found your experience in ${area} very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
+            }
+            return `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the data space and your interest in ${area} caught my attention. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
+        }
+        if (type === "w") {
+            return `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu experiencia en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+        }
+        return `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu interes en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+    }
+
     function fillMessage() {
+        let linkedinUser = GM_getValue("LINKEDIN_USER");
+        if (!linkedinUser) {
+            linkedinUser = prompt("Enter LINKEDIN_USER (victor | fran)", "victor");
+            if (!linkedinUser) return;
+            if (linkedinUser !== "victor" && linkedinUser !== "fran") return;
+            GM_setValue("LINKEDIN_USER", linkedinUser);
+        }
+
         const parent = document.querySelector('#interop-outlet').shadowRoot
         const messageBox = parent.querySelector('[contenteditable="true"]');
         const nameEl = parent.querySelector('.profile-card-one-to-one__profile-link');
@@ -76,27 +106,13 @@
 
         const name = capitalize(nameEl.textContent.trim().split(' ')[0]);
         const description = descriptionEl.textContent.trim();
-        const area = prompt("Enter area:", getDefaultArea(description));
+        const area = prompt("Enter area:", getDefaultArea(description, linkedinUser));
         const lang = prompt("Enter lang:", "en");
         const type = prompt("Enter type: w (worker) | s (student)", "w");
 
         if (!area | !lang | !type) return;
 
-        let message = ""
-
-        if (lang === "en") {
-            if (type === "w") {
-                message = `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the data space and found your experience in ${area} very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
-            } else {
-                message = `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the data space and your interest in ${area} caught my attention. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
-            }
-        } else {
-            if (type === "w") {
-                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu experiencia en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
-            } else {
-                message = `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de datos y tu interes en ${area} me pareció interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
-            }
-        }
+        let message = getMessage(name, area, lang, type, linkedinUser);
 
         typeLikeHuman(messageBox, message);
 
