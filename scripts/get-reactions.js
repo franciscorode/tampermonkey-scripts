@@ -307,8 +307,8 @@
             scrollContainer.scrollTop = scrollContainer.scrollHeight;
             scrollContainer.dispatchEvent(new Event('scroll', { bubbles: true }));
     
-            // Random wait between 1s and 3s
-            const waitTime = Math.floor(Math.random() * 2000) + 1000; 
+            // Random wait between 2s and 4s
+            const waitTime = Math.floor(Math.random() * 2000) + 2000; 
             await sleep(waitTime);
     
             attempts++;
@@ -348,6 +348,14 @@
                 description: descElem?.textContent.trim() || '',
                 link: linkElem ? linkElem.href : ''
             };
+
+            if (!connectionDegreeEl) {
+                // could be a company or something else
+                console.log("⚠️ No connection degree element for user:", user);
+                // we treat this reaction as connnection for now
+                connections.push(user);
+                continue;
+            }
 
             const isConnection = connectionDegreeEl.textContent.trim().includes('1er');
             if (isConnection) {
