@@ -72,7 +72,7 @@
     function getMessage(name, area, lang, type, linkedinUser) {
         if (linkedinUser === "fran") {
             if (lang === "en") {
-                return `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the ${area} and found your profile very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
+                return `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the ${area} space and found your profile very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
             }
             return `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de ${area} y tu perfile me ha parecido interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
         }
