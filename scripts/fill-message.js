@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Message Template Filler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.3
+// @version      0.1.4
 // @description  Auto-fill LinkedIn message template with name and area
 // @match        https://www.linkedin.com/mynetwork/invite-connect/connections/
 // @grant        GM_getValue
@@ -74,7 +74,7 @@
             if (lang === "en") {
                 return `Hey ${name}, I'm glad you liked the post! I'm building meaningful connections in the ${area} space and found your profile very interesting. I'm happy to keep in touch and learn from one another, feel free to reach out anytime! :)`;
             }
-            return `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de ${area} y tu perfile me ha parecido interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
+            return `Hola ${name}, me alegra que te haya gustado la publicación. Estoy construyendo conexiones genuinas en el área de ${area} y tu perfil me ha parecido interesante. Seria genial poder mantenernos en contacto y aprender mutuamente, no dudes en escribirme cuando quieras! :)`;
         }
         if (lang === "en") {
             if (type === "w") {
