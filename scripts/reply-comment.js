@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to reply comments on LinkedIn
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Adds a button to LinkedIn comments to copy a prompt to reply them
 // @author       ChatGPT
 // @match        https://www.linkedin.com/in/*/recent-activity/all/
@@ -34,7 +34,7 @@
     [comment_text]
     “””
 
-    Please give me 3–5 reply options that are short (1 sentences), funny, and directly connected to the person’s comment, so the exchange feels natural and engaging.
+    Please give me 3–5 reply options (mid-sized: 2 lines maximum) responding to the comment of the person, so the exchange feels natural and engaging.
     `;
 
 
