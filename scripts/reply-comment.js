@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to reply comments on LinkedIn
 // @namespace    http://tampermonkey.net/
-// @version      1.0.3
+// @version      1.0.4
 // @description  Adds a button to LinkedIn comments to copy a prompt to reply them
 // @author       ChatGPT
 // @match        https://www.linkedin.com/in/*/recent-activity/all/
@@ -19,43 +19,49 @@
     // Add button to copy AI prompts to reply comments
 
     const replyCommentVictorPrompt = `
-    I am a senior data engineer with experience in several startups. In the medium term, I’m building a data-focused startup with my twin brother (he’ll be CTO, I’ll be CEO). We’re following lean methodology: start small, solve a problem, and build a product for the data industry.
+    Context: I'm a senior data engineer building a data-focused startup with my twin brother (he's CTO, I'm CEO). I'm growing my LinkedIn network of potential clients—data engineers, data managers, and CDOs—by posting data memes, engaging authentically, and building genuine connections.
 
-    Right now, I’m growing my LinkedIn network of future clients (data engineers, data managers, CDOs, etc.). My strategy: posting data-related memes, engaging in groups, and connecting with people who react (+10 connections per post, ~3 posts per week).
-
-    I recently published this post:
-
-    “””
+    My recent post:
+    """
     [post_text]
-    “””
+    """
 
-    Someone commented:
-
-    “””
+    Comment I received:
+    """
     [comment_text]
-    “””
+    """
 
-    Please give me 3–5 reply options (mid-sized: 2 lines maximum) responding to the comment of the person, so the exchange feels natural and engaging.
+    Generate 3–5 reply options that are:
+    - Authentic and conversational (not salesy or overly formal)
+    - Maximum 2 lines each
+    - Value-adding—acknowledge their point, share a relevant insight, or ask a thoughtful follow-up question
+    - Natural enough that they encourage continued conversation
+    - Professional but approachable
+
+    Focus on building genuine connection over pitching.
     `;
 
     const replyCommentFranPrompt = `
-    I am a senior fullstack and genai engineer with experience in several startups. In the medium term, I’m building a data-focused startup with my twin brother (he’ll be CEO, I’ll be CTO). We’re following lean methodology: start small, solve a problem, and build a product for the data industry.
+    Context: I'm a senior fullstack and GenAI engineer building a data-focused startup with my twin brother (he's CEO, I'm CTO). I'm growing my LinkedIn network of potential referrals—AI engineers, AI managers, and CTOs—by posting GenAI memes, engaging authentically, and building genuine connections.
 
-    Right now, I’m growing my LinkedIn network of future referrals (ai engineers, ai managers, CTOs, etc.). My strategy: posting genai-related memes, engaging in groups, and connecting with people who react (+10 connections per post, ~3 posts per week).
-
-    I recently published this post:
-
-    “””
+    My recent post:
+    """
     [post_text]
-    “””
+    """
 
-    Someone commented:
-
-    “””
+    Comment I received:
+    """
     [comment_text]
-    “””
+    """
 
-    Please give me 3–5 reply options (mid-sized: 2 lines maximum) responding to the comment of the person, so the exchange feels natural and engaging.
+    Generate 3–5 reply options that are:
+    - Authentic and conversational (not salesy or overly formal)
+    - Maximum 2 lines each
+    - Value-adding—acknowledge their point, share a relevant insight, or ask a thoughtful follow-up question
+    - Natural enough that they encourage continued conversation
+    - Professional but approachable
+
+    Focus on building genuine connection over pitching.
     `;
 
 
