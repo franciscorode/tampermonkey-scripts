@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         Get prompt to make comments on LinkedIn posts
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.3
 // @description  Adds a button to copy AI prompt to generate comments to a post
 // @author       ChatGPT
 // @match        https://www.linkedin.com/feed/*
 // @match        https://www.linkedin.com/in/*/recent-activity/all/
 // @match        https://www.linkedin.com/posts/*
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/comment-post.js
 // @downloadURL  https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/comment-post.js
 // ==/UserScript==
@@ -17,12 +18,32 @@
 
     // Add button to copy AI prompt to generate comments to a post
 
-    const commentPrompt = `
+    const commentVictorPrompt = `
     I am a senior data engineer with experience in multiple startups. In the medium term, I’m building a data-focused startup with my twin brother (he’ll be CTO, I’ll be CEO). We’re following lean methodology: starting small, solving a real problem, and building the right product for the data industry.
 
     Right now, I’m expanding my network of future clients (data engineers, data managers, CDOs, etc.) on LinkedIn. My strategy: posting data-related memes, engaging in groups, and connecting with people who react (+10 connections per post, ~3 posts per week).
 
     When I see posts from my network about data, I want to add comments that are:
+
+    - short (1 sentence),
+    - related to the post content,
+    - light/funny so they spark replies.
+
+    I just saw this post:
+
+    “””
+    [post_text]
+    “””
+
+    Please give me 3–5 comment options that are witty, engaging, and relevant to the post.
+    `;
+
+    const commentFranPrompt = `
+    I am a senior fullstack and genai engineer with experience in multiple startups. In the medium term, I’m building a data-focused startup with my twin brother (he’ll be CEO, I’ll be CTO). We’re following lean methodology: starting small, solving a real problem, and building the right product for the data industry.
+
+    Right now, I’m growing my LinkedIn network of future referrals (ai engineers, ai managers, CTOs, etc.). My strategy: posting genai-related memes, engaging in groups, and connecting with people who react (+10 connections per post, ~3 posts per week).
+
+    When I see posts from my network about genai, I want to add comments that are:
 
     - short (1 sentence),
     - related to the post content,
@@ -61,6 +82,16 @@
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+
+                let linkedinUser = GM_getValue("LINKEDIN_USER");
+                if (!linkedinUser) {
+                    linkedinUser = prompt("Enter LINKEDIN_USER (victor | fran)", "victor");
+                    if (!linkedinUser) return;
+                    if (linkedinUser !== "victor" && linkedinUser !== "fran") return;
+                    GM_setValue("LINKEDIN_USER", linkedinUser);
+                }
+                const commentPrompt = linkedinUser === "victor" ? commentVictorPrompt : commentFranPrompt;
+
                 let promptText = commentPrompt.replace("[post_text]", postText);
                 navigator.clipboard.writeText(promptText);
             });
