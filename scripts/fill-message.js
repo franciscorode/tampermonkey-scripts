@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Message Template Filler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.4
+// @version      0.1.5
 // @description  Auto-fill LinkedIn message template with name and area
 // @match        https://www.linkedin.com/mynetwork/invite-connect/connections/
 // @grant        GM_getValue
@@ -15,7 +15,7 @@
 
     function getDefaultArea(description, linkedinUser) {
         if (linkedinUser === "fran") {
-            return "genai";
+            return "ai engineering";
         }
         const desc = description.toLowerCase();
 
