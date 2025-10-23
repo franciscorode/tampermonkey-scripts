@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Get prompt to reply comments on LinkedIn
 // @namespace    http://tampermonkey.net/
-// @version      1.0.4
+// @version      1.0.5
 // @description  Adds a button to LinkedIn comments to copy a prompt to reply them
 // @author       ChatGPT
 // @match        https://www.linkedin.com/in/*/recent-activity/all/
 // @match        https://www.linkedin.com/posts/*
 // @match        https://www.linkedin.com/feed/?highlightedUpdateType*
+// @match        https://www.linkedin.com/feed/update/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/reply-comment.js
