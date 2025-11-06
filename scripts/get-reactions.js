@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.3
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
 // @match        https://www.linkedin.com/posts/*
+// @match        https://www.linkedin.com/feed/update/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/get-reactions.js
@@ -136,6 +137,62 @@
                 btn.appendChild(icon);
             }
         });
+    }
+
+    function countCommentReactions() {
+        const buttons = document.querySelectorAll('button.comments-comment-social-bar__reactions-count--cr');
+        buttons.forEach(btn => {
+            const commentDiv = btn.closest('.comments-comment-entity');
+            if (!commentDiv) return;
+            const urn = commentDiv.getAttribute('data-id');
+            if (!urn) return;
+            console.log("comment urn: ", urn)
+
+            // retrieve stored usernames array
+            const key = `comment_scraped_users_${urn}`;
+            const stored = GM_getValue(key, null);
+            let users = [];
+            try {
+                users = stored ? JSON.parse(stored) : [];
+            } catch(err) {
+                console.warn(`Could not parse GM data for ${key}:`, err);
+            }
+            const count = users.length;
+            console.log("comment count: ", count)
+
+            // see if we already added a badge
+            let badge = btn.querySelector('.reaction-count-badge');
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'reaction-count-badge';
+                badge.style.marginLeft = '6px';
+                badge.style.padding = '2px 6px';
+                badge.style.background = '#0073b1';
+                badge.style.color = '#fff';
+                badge.style.borderRadius = '12px';
+                badge.style.fontSize = '12px';
+                badge.style.fontWeight = '500';
+                btn.appendChild(badge);
+            }
+            badge.textContent = count;
+
+            // Extract real reaction count from button text
+            const buttonText = btn.textContent.trim();
+            const realReactionsNumber = parseInt(buttonText) || 0;
+            let icon = btn.querySelector('.update-icon');
+            if (!icon && count < realReactionsNumber) {
+                icon = document.createElement('span');
+                icon.className = 'update-icon';
+                icon.textContent = '🔄';
+                icon.style.marginLeft = '4px';
+                btn.appendChild(icon);
+            }
+        });
+    }
+
+    function countReactions() {
+        countPostReactions();
+        countCommentReactions();
     }
 
     function openUserListMinimal(users) {
@@ -440,8 +497,8 @@
             run()
         }
         if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'b') {
-            console.log("Triguering countPostReactions()");
-            countPostReactions()
+            console.log("Triguering countReactions()");
+            countReactions()
         }
     });
 })();
