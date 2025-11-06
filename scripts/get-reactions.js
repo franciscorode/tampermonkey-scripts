@@ -4,7 +4,7 @@
 // @version      1.0.2
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
-// @match        https://www.linkedin.com/in/*/recent-activity/all/
+// @match        https://www.linkedin.com/in/*/recent-activity/*
 // @match        https://www.linkedin.com/posts/*
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -16,6 +16,7 @@
     'use strict';
 
     let currentPostId = null;
+    let currentCommentId = null;
 
     const VICTOR_TARGET_AUDIENCE_KEYWORDS = [
         "data engineer","dataops"," etl ","data engineering","bigdata",
@@ -62,17 +63,22 @@
                     }
                 }
             }
+            const btnComment = e.target.closest('button.comments-comment-social-bar__reactions-count--cr');
+            if (btnComment) {
+                const commentDiv = btnComment.closest('.comments-comment-entity');
+                if (commentDiv) {
+                    const urn = commentDiv.getAttribute('data-id');
+                    if (urn) {
+                        currentCommentId = urn;
+                        console.log("📄 Captured Comment URN:", currentCommentId);
+                    }
+                }
+            }
         });
-    }
+        
+             }
 
     setupReactionButtonListeners();
-
-    function getPostId() {
-        if (!currentPostId) {
-            console.error("⚠️ Post ID not captured yet. Please click the reactions button first.");
-        }
-        return currentPostId;
-    }
 
     async function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -186,7 +192,7 @@
 
             const a = doc.createElement("a");
             a.href = url;
-            a.download = `${currentPostId} - scraped_users.html`;
+            a.download = `${currentCommentId || currentPostId} - scraped_users.html`;
             doc.body.appendChild(a);
             a.click();
             doc.body.removeChild(a);
@@ -282,11 +288,6 @@
         pre.textContent = JSON.stringify(otherUsers);
         body.appendChild(pre);
     }
-
-
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
     
     async function scrollToBottomUntilEnds() {
         const scrollContainer = document.querySelector(
@@ -371,34 +372,41 @@
     }
 
 
-    function getStoredUsernames(postId) {
-        const key = `scraped_users_${postId}`;
+    function getStoredUsernames(itemId, itemType) {
+        let key = `scraped_users_${itemId}`;
+        if (itemType === "comment") {
+            key = "comment_" + key;
+        }
         const stored = GM_getValue(key, null);
         const users = stored ? JSON.parse(stored) : [];
         console.log(`User stored: ${users.length}`);
         return users
     }
 
-    function storeUsernames(postId, usernames) {
-        const key = `scraped_users_${postId}`;
+    function storeUsernames(itemId, itemType, usernames) {
+        let key = `scraped_users_${itemId}`;
+        if (itemType === "comment") {
+            key = "comment_" + key;
+        }
         GM_setValue(key, JSON.stringify(usernames));
     }
 
 
     async function run() {
-        const postId = getPostId();
-        if (!postId) {
-            console.error("Post ID not found.");
+        if (!currentPostId && !currentCommentId) {
+            console.error("Post or comment ID not found.");
             return;
         }
+        const itemId = currentCommentId || currentPostId;
+        const itemType = currentCommentId ? "comment" : "post";
 
-        console.log(`Post ID: ${postId}`);
+        console.log(`Item ID: ${itemId}`);
 
         await scrollToBottomUntilEnds();
         console.log("Done scroll");
 
         const allUsers = getReactors();
-        const alreadyStored = getStoredUsernames(postId);
+        const alreadyStored = getStoredUsernames(itemId, itemType);
 
         let newNoConnectionUsers = allUsers.noConnections.filter(u => !alreadyStored.includes(u.username));
         let newConnectionUsers = allUsers.connections.filter(u => !alreadyStored.includes(u.username));
@@ -418,7 +426,7 @@
         } else {
             console.log("New users found:", newNoConnectionUsers.length + newConnectionUsers.length);
             const updatedUsernames = [...alreadyStored, ...newNoConnectionUsers.map(u => u.username), ...newConnectionUsers.map(u => u.username)];
-            storeUsernames(postId, updatedUsernames);
+            storeUsernames(itemId, itemType, updatedUsernames);
         }
 
         openUserListMinimal(newNoConnectionUsers)
