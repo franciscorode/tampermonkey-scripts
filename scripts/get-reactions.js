@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.0.3
+// @version      1.0.4
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -415,7 +415,8 @@
                 continue;
             }
 
-            const isConnection = connectionDegreeEl.textContent.trim().includes('1er');
+            const text = connectionDegreeEl.textContent.trim().toLowerCase();
+            const isConnection = text.includes('1er') || text.includes('1st');
             if (isConnection) {
                 connections.push(user);
             } else {
