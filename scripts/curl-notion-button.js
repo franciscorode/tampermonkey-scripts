@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Notion curl generator
 // @namespace    http://tampermonkey.net/
-// @version      0.0.1
+// @version      0.0.2
 // @description  Generate button to copy curl command to create a Notion page
 // @match        https://www.linkedin.com/in/*
 // @grant        GM_getValue
@@ -23,27 +23,14 @@
     const DATABASE_OPTIONS = Object.keys(DATABASE_MAP);
 
     function addButton() {
-        const container = document.querySelector('#recent-activity-top-card')
-        || document.querySelector('section[data-member-id]');
+        const container = document.querySelectorAll('[data-view-name="premium-custom-button-on-profile-top-card"]')[1] || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
         if (!container) {
             console.error("❌ Container not found.");
             return;
         }
 
-        // Find the first matching button
-        const msgButton = Array.from(container.querySelectorAll('a[aria-label], button[aria-label]'))
-        .find(el => {
-            const label = el.getAttribute('aria-label')?.toLowerCase() || "";
-            return label.includes("message") || label.includes("mensaje");
-        });
-
-        if (!msgButton) {
-            console.log("No message button found");
-            return;
-        }
-
         // Check if button already added
-        if (msgButton.parentElement.querySelector('.curl-notion-btn')) return;
+        if (container.parentElement.querySelector('.curl-notion-btn')) return;
 
         // Create new button
         const newBtn = document.createElement("button");
@@ -60,7 +47,7 @@
 
         newBtn.addEventListener("click", () => generateCurl());
 
-        msgButton.parentElement.appendChild(newBtn);
+        container.parentElement.appendChild(newBtn);
     }
 
     function generateCurl() {

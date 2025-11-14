@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Message Template Filler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.7
+// @version      0.1.8
 // @description  Auto-fill LinkedIn message template with name and area
 // @match        https://www.linkedin.com/mynetwork/invite-connect/connections/
 // @match        https://www.linkedin.com/in/*
@@ -167,27 +167,14 @@
     }
 
     function addCommentReactorButton() {
-        const container = document.querySelector('#recent-activity-top-card')
-        || document.querySelector('section[data-member-id]');
+        const container = document.querySelectorAll('[data-view-name="premium-custom-button-on-profile-top-card"]')[1] || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
         if (!container) {
             console.error("❌ Container not found.");
             return;
         }
 
-        // Find the first matching button
-        const msgButton = Array.from(container.querySelectorAll('a[aria-label], button[aria-label]'))
-        .find(el => {
-            const label = el.getAttribute('aria-label')?.toLowerCase() || "";
-            return label.includes("message") || label.includes("mensaje");
-        });
-
-        if (!msgButton) {
-            console.log("No message button found");
-            return;
-        }
-        
         // Check if button already added
-        if (msgButton.parentElement.querySelector('.track-comment-reactor-btn')) return;
+        if (container.parentElement.querySelector('.track-comment-reactor-btn')) return;
 
         // Create new button
         const newBtn = document.createElement("button");
@@ -204,7 +191,7 @@
 
         newBtn.addEventListener("click", () => trackCommentReactor());
 
-        msgButton.parentElement.appendChild(newBtn);
+        container.parentElement.appendChild(newBtn);
 
     }
 
