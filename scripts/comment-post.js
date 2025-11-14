@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to make comments on LinkedIn posts
 // @namespace    http://tampermonkey.net/
-// @version      1.0.4
+// @version      1.0.6
 // @description  Adds a button to copy AI prompt to generate comments to a post
 // @author       ChatGPT
 // @match        https://www.linkedin.com/feed/*
@@ -19,39 +19,94 @@
     // Add button to copy AI prompt to generate comments to a post
 
     const commentVictorPrompt = `
-    Context: I'm a senior data engineer building a data-focused startup with my twin brother (he's CTO, I'm CEO). I'm growing my LinkedIn network of potential clients—data engineers, data managers, and CDOs—by posting data memes and engaging authentically with my network.
+    Context: I'm a senior data engineer and CEO of a data startup (my twin brother is CTO). I have 3,000 LinkedIn followers. I'm building my network of future clients—data engineers, data managers, and CDOs—by establishing authority through high-value content and selective, meaningful engagement.
 
     Post I want to comment on:
     """
     [post_text]
     """
 
-    Generate 3–5 comment options that are:
+    Evaluate this post and give it a score from 1-10 based on these criteria:
+
+    **Content Quality (0-4 points):**
+    - Does it go beyond surface-level lists or obvious takes?
+    - Is the author sharing real experience, taking a strong position, or asking a meaningful question?
+    - Would engaging here show my expertise rather than just my presence?
+
+    **Audience Relevance (0-3 points):**
+    - Is the author a decision-maker (data manager, CDO, CTO) or influencer in data space?
+    - Are data engineers or data leaders likely engaging with this post?
+
+    **Contribution Potential (0-3 points):**
+    - Can I add genuine insight from my experience that others couldn't?
+    - Would my comment start a substantive conversation or just add noise?
+
+    **Response format:**
+
+    **Post Summary:** [1-2 sentence summary of what the post is about]
+
+    **Score: [X/10]**
+
+    [If score ≥ 5:]
+    ✓ WORTH COMMENTING
+
+    Then provide 3–5 comment options that are:
     - One sentence maximum
     - Witty and light-hearted (avoid being overly serious or formal)
     - Genuinely relevant to the post content
     - Conversation starters—written to encourage the author or others to reply
     - Insightful or funny, but never salesy
+    - Based on real experience, not generic observations
 
-    Prioritize comments that show genuine interest and add value to the discussion.
+    [If score < 5:]
+    ✗ SKIP - [brief reason why the score is low]
+
+    Be ruthlessly selective. Your credibility as a CEO depends on only showing up when you have something valuable to say.
     `;
 
     const commentFranPrompt = `
-    Context: I'm a senior fullstack and GenAI engineer building a data-focused startup with my twin brother (he's CEO, I'm CTO). I'm growing my LinkedIn network of potential referrals—AI engineers, AI managers, and CTOs—by posting GenAI memes and engaging authentically with my network.
+    Context: I'm a fullstack and GenAI engineer and CTO of a data startup (my twin brother is CEO). I have 800 LinkedIn followers. I'm building my network of potential referrals and connections—AI engineers, AI managers, and CTOs—by posting GenAI memes and engaging actively to increase visibility.
 
     Post I want to comment on:
     """
     [post_text]
     """
 
-    Generate 3–5 comment options that are:
+    Evaluate this post and give it a score from 1-10 based on these criteria:
+
+    **Content Relevance (0-4 points):**
+    - Does it relate to GenAI, AI engineering, LLMs, or AI infrastructure?
+    - Is it something AI engineers or builders would care about?
+
+    **Audience Value (0-3 points):**
+    - Is the author in my target audience (AI engineer, manager, CTO) or an influencer in AI space?
+    - Are the right people engaging with this post?
+
+    **Engagement Opportunity (0-3 points):**
+    - Can I add value, humor, or relatability from my experience?
+    - Would my comment help build a connection or start a conversation?
+
+    **Response format:**
+
+    **Post Summary:** [1-2 sentence summary of what the post is about]
+
+    **Score: [X/10]**
+
+    [If score ≥ 5:]
+    ✓ WORTH COMMENTING
+
+    Then provide 3–5 comment options that are:
     - One sentence maximum
     - Witty and light-hearted (avoid being overly serious or formal)
     - Genuinely relevant to the post content
     - Conversation starters—written to encourage the author or others to reply
-    - Insightful or funny, but never salesy
+    - Relatable or funny, showing you "get it" as a fellow builder
+    - Never salesy or self-promotional
 
-    Prioritize comments that show genuine interest and add value to the discussion.
+    [If score < 5:]
+    ✗ SKIP - [brief reason why the score is low]
+
+    At 800 followers, you can engage more broadly. Focus on building connections and showing up consistently.
     `;
 
     function addButtonsToPosts() {
