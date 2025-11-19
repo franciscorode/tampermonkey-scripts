@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to make comments on LinkedIn posts
 // @namespace    http://tampermonkey.net/
-// @version      1.0.8
+// @version      1.0.9
 // @description  Adds a button to copy AI prompt to generate comments to a post
 // @author       ChatGPT
 // @match        https://www.linkedin.com/feed/*
@@ -26,6 +26,11 @@
     [post_text]
     """
 
+    Post author:
+    """
+    [post_author]
+    """
+
     Post engagement data:
     """
     [post_reactions]
@@ -38,6 +43,12 @@
 
     Evaluate this post and give it a score from 1-10 based on these criteria:
 
+    **Pod Detection Flag:**
+    Calculate reactions/comments ratio:
+    - If comments >= reactions: STOP EVALUATION and return "🚩 LIKELY POD - Skip this post"
+    - If ratio is 2-8: Flag as "⚠️ POSSIBLE POD" (continue evaluation but reduce score by 2 points)
+    - If ratio is 9+: Likely organic (proceed normally)
+
     **Content Quality (0-3 points):**
     - Does it go beyond surface-level lists or obvious takes?
     - Is the author sharing real experience, taking a strong position, or asking a meaningful question?
@@ -45,9 +56,10 @@
     - IMPORTANT: Personal announcements, goodbyes, job changes, or congratulations posts score LOW here (0-1 points) unless I have a genuine connection to the person
 
     **Audience Relevance (0-2 points):**
-    - Is the author a decision-maker (data manager, CDO, CTO) or influencer in data space?
+    - Is the author a decision-maker (data manager, CDO, CTO) or influencer in data space? (Use post author name/title to assess)
     - Are data engineers or data leaders likely engaging with this post?
     - IMPORTANT: Even if the author is relevant, is THIS specific post aimed at my target audience, or at a different group (students, colleagues, friends)?
+    - High-value authors (known influencers, CTOs, data leaders) get +1 bonus point
 
     **Engagement Momentum (0-3 points):**
     Posts 0-6 hours old:
@@ -78,7 +90,13 @@
 
     **Engagement Status:** [Posted X ago | Y reactions, Z comments, W shares - note if active or dead]
 
-    **Score: [X/10]**
+    **Pod Detection:** [reactions/comments ratio = X | Status: 🚩 LIKELY POD / ⚠️ POSSIBLE POD] [Only show this line if ratio is 8 or lower. Skip entirely if organic (ratio 9+)]
+
+    **Score: [X/10]** [minus 2 if POSSIBLE POD flagged]
+
+    [If 🚩 LIKELY POD detected:]
+    ⊘ SKIP - This is likely an engagement pod
+    Reason: Comments >= reactions suggests artificial engagement gaming
 
     [If score ≥ 6:]
     ✓ WORTH COMMENTING
@@ -110,6 +128,11 @@
     [post_text]
     """
 
+    Post author:
+    """
+    [post_author]
+    """
+
     Post engagement data:
     """
     [post_reactions]
@@ -122,15 +145,22 @@
 
     Evaluate this post and give it a score from 1-10 based on these criteria:
 
+    **Pod Detection Flag:**
+    Calculate reactions/comments ratio:
+    - If comments >= reactions: STOP EVALUATION and return "🚩 LIKELY POD - Skip this post"
+    - If ratio is 2-8: Flag as "⚠️ POSSIBLE POD" (continue evaluation but reduce score by 2 points)
+    - If ratio is 9+: Likely organic (proceed normally)
+
     **Content Relevance (0-3 points):**
     - Does it relate to GenAI, AI engineering, LLMs, or AI infrastructure?
     - Is it something AI engineers or builders would care about?
     - IMPORTANT: Personal announcements, goodbyes, job changes score LOW here (0-1 points) unless I have a genuine connection to the person
 
     **Audience Value (0-2 points):**
-    - Is the author in my target audience (AI engineer, manager, CTO) or an influencer in AI space?
+    - Is the author in my target audience (AI engineer, manager, CTO) or an influencer in AI space? (Use post author name/title to assess)
     - Are the right people engaging with this post?
     - IMPORTANT: Even if the author is relevant, is THIS specific post aimed at my target audience, or at a different group?
+    - High-value authors (known AI influencers, CTOs, AI engineering leaders) get +1 bonus point
 
     **Engagement Momentum (0-3 points):**
     Posts 0-6 hours old:
@@ -159,7 +189,13 @@
 
     **Engagement Status:** [Posted X ago | Y reactions, Z comments, W shares - note if active or dead]
 
-    **Score: [X/10]**
+    **Pod Detection:** [reactions/comments ratio = X | Status: 🚩 LIKELY POD / ⚠️ POSSIBLE POD] [Only show this line if ratio is 8 or lower. Skip entirely if organic (ratio 9+)]
+
+    **Score: [X/10]** [minus 2 if POSSIBLE POD flagged]
+
+    [If 🚩 LIKELY POD detected:]
+    ⊘ SKIP - This is likely an engagement pod
+    Reason: Comments >= reactions suggests artificial engagement gaming
 
     [If score ≥ 5:]
     ✓ WORTH COMMENTING
@@ -205,10 +241,15 @@
             if (!postTimeEl) {
                 return;
             }
+            const postAuthorEl = post.querySelector('.update-components-actor__meta-link');
+            if (!postAuthorEl) {
+                return;
+            }
 
             const postText = postTextEl?.querySelector('div').textContent.trim();
             const postReactions = postReactionsEl.textContent.replace(/\s+/g, ' ').trim();
             const postTime = postTimeEl.textContent.replace(/\s+/g, ' ').trim();
+            const postAuthor = postAuthorEl.textContent.replace(/\s+/g, ' ').trim();
             const btn = document.createElement('button');
             btn.class = 'tm-comment-btn';
             btn.textContent = '📋';
@@ -229,6 +270,7 @@
                 let finalPrompt = linkedinUser === "victor" ? commentVictorPrompt : commentFranPrompt;
 
                 finalPrompt = finalPrompt.replace("[post_text]", postText);
+                finalPrompt = finalPrompt.replace("[post_author]", postAuthor);
                 finalPrompt = finalPrompt.replace("[post_reactions]", postReactions);
                 finalPrompt = finalPrompt.replace("[time_posted_ago]", postTime);
 
