@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to make comments on LinkedIn posts
 // @namespace    http://tampermonkey.net/
-// @version      1.0.9
+// @version      1.0.10
 // @description  Adds a button to copy AI prompt to generate comments to a post
 // @author       ChatGPT
 // @match        https://www.linkedin.com/feed/*
@@ -50,6 +50,7 @@
     - If ratio is 9+: Likely organic (proceed normally)
 
     **Content Quality (0-3 points):**
+    - Does the content make logical sense and is it coherent/congruent?
     - Does it go beyond surface-level lists or obvious takes?
     - Is the author sharing real experience, taking a strong position, or asking a meaningful question?
     - Would engaging here show my expertise rather than just my presence?
@@ -152,6 +153,7 @@
     - If ratio is 9+: Likely organic (proceed normally)
 
     **Content Relevance (0-3 points):**
+    - Does the content make logical sense and is it coherent/congruent?
     - Does it relate to GenAI, AI engineering, LLMs, or AI infrastructure?
     - Is it something AI engineers or builders would care about?
     - IMPORTANT: Personal announcements, goodbyes, job changes score LOW here (0-1 points) unless I have a genuine connection to the person
