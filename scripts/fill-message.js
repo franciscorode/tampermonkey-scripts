@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Message Template Filler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.9
+// @version      0.1.10
 // @description  Auto-fill LinkedIn message template with name and area
 // @match        https://www.linkedin.com/mynetwork/invite-connect/connections/
 // @match        https://www.linkedin.com/in/*
@@ -84,9 +84,9 @@
         const itemLiked = getItemLiked(userName, lang)
         if (linkedinUser === "fran") {
             if (lang === "en") {
-                return `Hey ${name}, glad the ${itemLiked} liked. Saw you're working in the ${area} space. Great to stay in touch`;
+                return `Hey ${name}, glad you liked the ${itemLiked}. I'm building connections in the ${area} space and found your profile interesting. Great to stay in touch`;
             }
-            return `Hola ${name}, me alegra que te gustara ${itemLiked}. Vi que trabajas en ${area}. Genial mantenernos en contacto`;
+            return `Hola ${name}, me alegra que te gustara ${itemLiked}. Estoy connectando con personas en el area d ${area} y tu perfil me pareció interesante. Genial estar en contacto`;
         }
         if (lang === "en") {
             if (type === "w") {
