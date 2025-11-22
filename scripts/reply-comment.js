@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to reply comments on LinkedIn
 // @namespace    http://tampermonkey.net/
-// @version      1.0.6
+// @version      1.0.7
 // @description  Adds a button to LinkedIn comments to copy a prompt to reply them
 // @author       ChatGPT
 // @match        https://www.linkedin.com/in/*/recent-activity/all/
@@ -31,6 +31,11 @@
     """
     [comment_text]
     """
+
+    Comment author:
+    """
+    [comment_author]
+    """
     
     Evaluate this comment and give it a score from 1-10 based on these criteria:
     
@@ -39,7 +44,7 @@
     - Or is it generic ("Great post!", "Thanks for sharing", emoji-only)?
     
     **Relationship Value (0-3 points):**
-    - Is the commenter in my target audience (data engineer, manager, CDO) or an influencer?
+    - Based on the comment author's name/title, are they in my target audience (data engineer, manager, CDO) or an influencer?
     - Could replying help build a meaningful connection?
     
     **Conversation Potential (0-3 points):**
@@ -85,6 +90,11 @@
     """
     [comment_text]
     """
+
+    Comment author:
+    """
+    [comment_author]
+    """
     
     Evaluate this comment and give it a score from 1-10 based on these criteria:
     
@@ -93,7 +103,7 @@
     - Or is it generic ("Great post!", "Thanks for sharing", emoji-only)?
     
     **Relationship Value (0-3 points):**
-    - Is the commenter in my target audience (AI engineer, manager, CTO) or someone I should connect with?
+    - Based on the comment author's name/title, are they in my target audience (AI engineer, manager, CTO) or someone I should connect with?
     - Could replying help build visibility or a connection?
     
     **Engagement Opportunity (0-3 points):**
@@ -130,11 +140,10 @@
 
     function addButtonsToComments() {
         console.log("Creating buttons in comments to copy prompts");
-        const comments = document.querySelectorAll('.comments-comment-item__main-content');
+        const comments = document.querySelectorAll('.comments-comment-entity');
         console.log("Comments lenght: ", comments.length)
 
         comments.forEach(comment => {
-            const commentText = comment.textContent.trim();
             const btn = document.createElement('button');
             btn.textContent = '📋';
             btn.title = 'Copy prompt to generate reply'
@@ -142,6 +151,10 @@
             const parent = comment.closest('.feed-shared-update-v2');
             const postTextEl = parent.querySelector('.feed-shared-inline-show-more-text');
             const postText = postTextEl ? postTextEl.textContent.trim() : '';
+
+            const commentText = comment.querySelector('.comments-comment-item__main-content').textContent.trim();
+            const commentAuthor = comment.querySelector('.comments-comment-meta__actor').textContent.replace(/\s+/g, ' ').trim();
+
 
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -156,7 +169,7 @@
                 }
                 const replyCommentPrompt = linkedinUser === "victor" ? replyCommentVictorPrompt : replyCommentFranPrompt;
 
-                let promptText = replyCommentPrompt.replace("[post_text]", postText).replace("[comment_text]", commentText);
+                let promptText = replyCommentPrompt.replace("[post_text]", postText).replace("[comment_text]", commentText).replace("[comment_author]", commentAuthor);
                 navigator.clipboard.writeText(promptText);
             });
             comment.appendChild(btn);
