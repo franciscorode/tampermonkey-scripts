@@ -50,6 +50,12 @@
         "full stack", "fullstack", "engineer", "software", "developer", " ai ", "founder", "co-founder",
     ].map(k => k.toLowerCase());
 
+    const VICTOR_BLACKLIST_KEYWORDS = [
+        "frontend", "analyst", "backend", "cyber", "student", "industrial", "devops"].map(k => k.toLowerCase());
+
+    const FRAN_BLACKLIST_KEYWORDS = [
+        "analyst", "business intelligence", "cyber", "student", "industrial", "devops"].map(k => k.toLowerCase());
+
 
     function setupReactionButtonListeners() {
         document.body.addEventListener('click', function (e) {
@@ -206,13 +212,16 @@
 
         let targetAudienceKeywords = [];
         let doubtTargetAudienceKeywords = [];
+        let blacklistKeywords = [];
 
         if (linkedinUser === "victor") {
             targetAudienceKeywords = VICTOR_TARGET_AUDIENCE_KEYWORDS;
             doubtTargetAudienceKeywords = VICTOR_DOUBT_TARGET_AUDIENCE_KEYWORDS;
+            blacklistKeywords = VICTOR_BLACKLIST_KEYWORDS;
         } else if (linkedinUser === "fran") {
             targetAudienceKeywords = FRAN_TARGET_AUDIENCE_KEYWORDS;
             doubtTargetAudienceKeywords = FRAN_DOUBT_TARGET_AUDIENCE_KEYWORDS;
+            blacklistKeywords = FRAN_BLACKLIST_KEYWORDS;
         } else {
             console.error("Unknown LINKEDIN_USER:", linkedinUser);
             return;
@@ -222,10 +231,12 @@
             targetAudienceKeywords.some(k => (user.description || "").toLowerCase().includes(k));
         const isDoubtTarget = (user) =>
             doubtTargetAudienceKeywords.some(k => (user.description || "").toLowerCase().includes(k));
+        const isBlacklisted = (user) =>
+            blacklistKeywords.some(k => (user.description || "").toLowerCase().includes(k));
 
         const targetUsers = users.filter(isTarget);
         const doubtTargetUsers = users.filter(u => !isTarget(u) && isDoubtTarget(u));
-        const otherUsers  = users.filter(u => !isTarget(u) && !isDoubtTarget(u));
+        const otherUsers  = users.filter(u => !isTarget(u) && !isDoubtTarget(u) && !isBlacklisted(u));
 
         const win = window.open("", "_blank");
         const doc = win.document;
