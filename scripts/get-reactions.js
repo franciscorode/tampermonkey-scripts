@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.0.5
+// @version      1.0.6
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -20,41 +20,67 @@
     let currentCommentId = null;
 
     const VICTOR_TARGET_AUDIENCE_KEYWORDS = [
-        "data engineer","dataops"," etl ","data engineering","bigdata",
-        "big data","data analyst"," BI ","business intelligence",
-        "data architect","data governance","data modeling","data management",
-        " CDO ","Head of data","VP of data"," CTO ","Data manager","Director of Data",
-        "databricks","snowflake","bigquery"," dbt ","spark","power bi","tableau",
+        "data engineer","data engineering","bigdata","data architect", " CDO ", "Head of data","VP of data",
+        "Data manager","Director of Data","Data Leader", "Chief data officer", " CIO ", "data engineering manager",
+        "data lead","VP data", "Head of analytics", "Chief analytics officer", "VP analytics", "Director of analytics"
+    ].map(k => k.toLowerCase());
+
+    const VICTOR_DOUBT_TARGET_AUDIENCE_KEYWORDS = [
+        ,"dataops"," etl ", "big data","data analyst"," BI ","business intelligence",
+        ,"data governance","data modeling","data management",
+        ," CTO ", "databricks","snowflake","bigquery"," dbt ","spark","power bi","tableau",
         "data visualization","data pipeline","lakehouse","data lake","data warehouse", "Datawarehouse", "datalake",
         "ingeniero de datos", "engenheiro de dados", "data analysis", "Airflow", "Engenheira de Dados",
         "Data Quality", "data platform", "Ingeniería de Datos", "Data Steward", "Data Visualisation", "data analytics",
         "BI Engineer", "Arquitectura de Datos", "Data Eng", "Analytics Engineer", "Data Enthusiast", 
-        "Data & Analytics", "Analytics Engineer"
-    ].map(k => k.toLowerCase());
-
-    const VICTOR_DOUBT_TARGET_AUDIENCE_KEYWORDS = [
-        "engineer","software","architecture","data","cloud", "analyst","developer",
-        "devops", " IT ", " TI ", " sql ","python",
-        "consultant", "azure", " aws ", " gcp ", "google cloud", "analytics",
-        "machine learning", "ml engineer", "analista", "Governance", "Data enthusiast", "Alteryx",
-        "Data Specialist"
+        "Data & Analytics", "Analytics Engineer", "Data Specialist", "Ingeniera de Datos",
+        "data", "analyst","ETL developer", "analytics", "Governance", "Data enthusiast", "Alteryx",
+        "Data Strategy", "data consultant", "VP of engineering", "redshift", "streaming", "kafka"
     ].map(k => k.toLowerCase());
 
     const FRAN_TARGET_AUDIENCE_KEYWORDS = [
         "ai engineer","genai","CTO","CDO","head of data", "head of ai", "Agentic AI", "AI Architect",
         "ai agent", "VP of data", "chief data officer", "chief technology officer", "director of data",
-        "director of ai", "VP of ai", "AI product manager", "AI strateg", "generative AI", "AI software",
-        "chief AI officer"
+        "director of ai", "VP of ai", "AI product manager", "AI strategy", "generative AI", "AI software",
+        "chief AI officer", "VP of engineering", "VP engineering", "Head of engineering", "Director of engineering",
+        "AI lead", "AI team lead", "Head of machine learning", "Head of ML", "VP of machine learning", "VP ML",
+        "Director of machine learning", "Director ML", "Machine learning architect", "ML architect",
+        "LLM engineer", " LLM ", "AI/ML", "Artificial intelligence", "Gen AI", "AI engineering manager",
+        "Engineering manager"
     ].map(k => k.toLowerCase());
     const FRAN_DOUBT_TARGET_AUDIENCE_KEYWORDS = [
         "full stack", "fullstack", "engineer", "software", "developer", " ai ", "founder", "co-founder",
+        "backend engineer", "backend developer", "frontend engineer", "frontend developer",
+        "python developer", "python engineer", "machine learning engineer", "ML engineer",
+        "data scientist", "data science", "technical lead", "tech lead", "engineering lead",
+        "software architect", "solutions architect", "cloud engineer", "startup", "entrepreneur",
+        "product manager", "technical manager", "llm"
+    ].map(k => k.toLowerCase());
+
+    const COMMON_BLACKLIST_KEYWORDS = [
+        "marketing", "sales", "recruiter", "recruitment", "talent acquisition", " HR ", "human resources",
+        "finance", "accounting", "legal", "designer", "design", " UX ", " UI ", "content", "copywriter",
+        "social media", " SEO ", "customer success", "support", " QA ", "quality assurance", "tester",
+        "intern", "internship", "freelance", "project manager", "scrum master", "agile coach", "devops",
+        "cyber", "student", "industrial", "administrative", "admin", "office manager", "operations",
+        "logistics", "supply chain", "procurement", "purchasing", "real estate",
+        "manufacturing", "retail", "hospitality", "healthcare", "education", "teacher", "professor",
+        "journalist", "writer", "photographer", "videographer", "editor", "assistant", "coordinator",
+        "mobile developer", "mobile engineer", "iOS developer", "Android developer", "game developer",
+        "game engineer", "embedded systems", "embedded engineer", "hardware engineer", "network engineer",
+        "network administrator", "system administrator", "sysadmin", "wordpress", "webmaster",
+        "frontend", "frontend developer","database administrator", " DBA "
     ].map(k => k.toLowerCase());
 
     const VICTOR_BLACKLIST_KEYWORDS = [
-        "frontend", "analyst", "backend", "cyber", "student", "industrial", "devops"].map(k => k.toLowerCase());
+        ...COMMON_BLACKLIST_KEYWORDS,
+        "backend"
+    ].map(k => k.toLowerCase());
 
     const FRAN_BLACKLIST_KEYWORDS = [
-        "analyst", "business intelligence", "cyber", "student", "industrial", "devops"].map(k => k.toLowerCase());
+        ...COMMON_BLACKLIST_KEYWORDS,
+        "analyst", "business intelligence"
+    ].map(k => k.toLowerCase());
 
 
     function setupReactionButtonListeners() {
