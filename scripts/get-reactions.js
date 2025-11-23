@@ -70,12 +70,14 @@
         "mobile developer", "mobile engineer", "iOS developer", "Android developer", "game developer",
         "game engineer", "embedded systems", "embedded engineer", "hardware engineer", "network engineer",
         "network administrator", "system administrator", "sysadmin", "wordpress", "webmaster",
-        "frontend", "frontend developer","database administrator", " DBA "
+        "frontend", "frontend developer","database administrator", " DBA ", "SAP", "Oracle", "mainframe", "MBA",
+        "SAS", "MSc", "PhD", "doctorate", "Site Reliability", "SRE", "technical support", "IT support",
+        "Master", "Aerospace"
     ].map(k => k.toLowerCase());
 
     const VICTOR_BLACKLIST_KEYWORDS = [
         ...COMMON_BLACKLIST_KEYWORDS,
-        "backend"
+        "backend", "JavaScript", "react", "nodejs", "node.js", "fullstack", "full stack", "software engineer",
     ].map(k => k.toLowerCase());
 
     const FRAN_BLACKLIST_KEYWORDS = [
