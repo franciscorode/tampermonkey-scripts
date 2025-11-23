@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.0.6
+// @version      1.0.7
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
+// @match        https://www.linkedin.com/in/*
 // @match        https://www.linkedin.com/posts/*
 // @match        https://www.linkedin.com/feed/update/*
 // @grant        GM_getValue
@@ -112,6 +113,158 @@
              }
 
     setupReactionButtonListeners();
+
+    // ======= TIER3 ENGAGER TRACKING =======
+    function normalizeUsername(username) {
+        // Remove trailing slashes and query params
+        return username ? username.replace(/\/$/, '').split('?')[0] : null;
+    }
+
+    function getUsernameFromUrl() {
+        const path = window.location.pathname;
+        const match = path.match(/\/in\/([^\/\?]+)/);
+        return match ? normalizeUsername(decodeURIComponent(match[1])) : null;
+    }
+
+    function getTier3Engagers() {
+        const stored = GM_getValue("tier3_engagers", null);
+        return stored ? JSON.parse(stored) : {};
+    }
+
+    function getTier3Discarded() {
+        const stored = GM_getValue("tier3_discarded", null);
+        return stored ? JSON.parse(stored) : {};
+    }
+
+    function saveTier3Engagers(engagers) {
+        GM_setValue("tier3_engagers", JSON.stringify(engagers));
+    }
+
+    function saveTier3Discarded(discarded) {
+        GM_setValue("tier3_discarded", JSON.stringify(discarded));
+    }
+
+    function addTier3EngagerButton() {
+        const container = document.querySelectorAll('[aria-label="More actions"]')[1].parentElement.parentElement || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
+
+        if (!container) {
+            console.error("❌ Container not found for tier3 buttons.");
+            return;
+        }
+        console.log("✅ Found container for tier3 buttons:", container);
+
+        // Check if button already added
+        if (container.parentElement.querySelector('.tier3-engager-btn')) return;
+
+        const username = getUsernameFromUrl();
+        if (!username) {
+            console.error("❌ Could not extract username from URL.");
+            return;
+        }
+
+        // Get display name from the page
+        const displayNameElement = document.querySelector('h1');
+        if (!displayNameElement) {
+            console.error("❌ Could not find display name element on the page.");
+            alert("❌ Error: Could not find profile name on the page. Make sure you're on a LinkedIn profile page.");
+            return;
+        }
+        // Remove additional name in parentheses (e.g., "Sidney (Sid) M." -> "Sidney M.")
+        const displayName = displayNameElement.textContent.trim().replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+
+        // Create "Track as tier3 engager" button
+        const trackBtn = document.createElement("button");
+        trackBtn.innerText = "🎯 Track as tier3 engager";
+        trackBtn.className = "tier3-engager-btn";
+        trackBtn.style.margin = "8px";
+        trackBtn.style.padding = "4px 8px";
+        trackBtn.style.border = "1px solid #0a66c2";
+        trackBtn.style.borderRadius = "12px";
+        trackBtn.style.background = "white";
+        trackBtn.style.color = "#0a66c2";
+        trackBtn.style.cursor = "pointer";
+        trackBtn.style.fontWeight = "bold";
+
+        trackBtn.addEventListener("click", () => {
+            const engagers = getTier3Engagers();
+            if (!engagers[displayName]) {
+                engagers[displayName] = { count: 0, username: username };
+            }
+            engagers[displayName].count += 1;
+            saveTier3Engagers(engagers);
+            alert(`✅ Tracked ${displayName} as tier3 engager (${engagers[displayName].count} times)`);
+        });
+
+        container.parentElement.appendChild(trackBtn);
+    }
+
+    function addTier3DiscardButton() {
+        const container = document.querySelectorAll('[aria-label="More actions"]')[1].parentElement.parentElement || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
+
+        if (!container) {
+            console.error("❌ Container not found for tier3 buttons.");
+            return;
+        }
+        console.log("✅ Found container for tier3 buttons:", container);
+
+        // Check if button already added
+        if (container.parentElement.querySelector('.tier3-discard-btn')) return;
+
+        const username = getUsernameFromUrl();
+        if (!username) {
+            console.error("❌ Could not extract username from URL.");
+            return;
+        }
+
+        // Get display name from the page
+        const displayNameElement = document.querySelector('h1');
+        if (!displayNameElement) {
+            console.error("❌ Could not find display name element on the page.");
+            alert("❌ Error: Could not find profile name on the page. Make sure you're on a LinkedIn profile page.");
+            return;
+        }
+        // Remove additional name in parentheses (e.g., "Sidney (Sid) M." -> "Sidney M.")
+        const displayName = displayNameElement.textContent.trim().replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+
+        // Create "Discard as tier3" button
+        const discardBtn = document.createElement("button");
+        discardBtn.innerText = "❌ Discard as tier3";
+        discardBtn.className = "tier3-discard-btn";
+        discardBtn.style.margin = "8px";
+        discardBtn.style.padding = "4px 8px";
+        discardBtn.style.border = "1px solid #d32f2f";
+        discardBtn.style.borderRadius = "12px";
+        discardBtn.style.background = "white";
+        discardBtn.style.color = "#d32f2f";
+        discardBtn.style.cursor = "pointer";
+        discardBtn.style.fontWeight = "bold";
+
+        discardBtn.addEventListener("click", () => {
+            const discarded = getTier3Discarded();
+            if (!discarded[displayName]) {
+                discarded[displayName] = username;
+                saveTier3Discarded(discarded);
+                alert(`✅ Discarded ${displayName} as tier3`);
+            } else {
+                alert(`ℹ️ ${displayName} is already discarded`);
+            }
+        });
+
+        container.parentElement.appendChild(discardBtn);
+    }
+
+    // Listen for 'e' and 'd' keys on profile pages
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'e' && window.location.pathname.includes('/in/')) {
+            console.log("Triggering add tier3 engager button");
+            addTier3EngagerButton();
+        }
+        if (e.key.toLowerCase() === 'd' && window.location.pathname.includes('/in/')) {
+            console.log("Triggering add tier3 discard button");
+            addTier3DiscardButton();
+        }
+    });
+    // ======= END TIER3 ENGAGER TRACKING =======
 
     async function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -253,6 +406,27 @@
             return;
         }
 
+        // Filter out tier3 discarded users
+        const tier3Discarded = getTier3Discarded();
+        const tier3Engagers = getTier3Engagers();
+
+        console.log("📊 Tier3 Engagers:", tier3Engagers);
+        console.log("❌ Tier3 Discarded:", tier3Discarded);
+
+        const isTier3Discarded = (user) => {
+            // Match by display name (user.username is the display name from reactions modal)
+            const isDiscarded = tier3Discarded[user.username];
+            if (isDiscarded) {
+                console.log("🚫 Filtering out discarded user:", user.username, "(username:", isDiscarded, ")");
+            }
+            return isDiscarded;
+        };
+
+        // Filter out discarded users
+        const usersBeforeFilter = users.length;
+        users = users.filter(u => !isTier3Discarded(u));
+        console.log(`Filtered ${usersBeforeFilter - users.length} discarded users. Remaining: ${users.length}`);
+
         const isTarget = (user) =>
             targetAudienceKeywords.some(k => (user.description || "").toLowerCase().includes(k));
         const isDoubtTarget = (user) =>
@@ -260,9 +434,16 @@
         const isBlacklisted = (user) =>
             blacklistKeywords.some(k => (user.description || "").toLowerCase().includes(k));
 
-        const targetUsers = users.filter(isTarget);
-        const doubtTargetUsers = users.filter(u => !isTarget(u) && isDoubtTarget(u));
-        const otherUsers  = users.filter(u => !isTarget(u) && !isDoubtTarget(u) && !isBlacklisted(u));
+        // Sort function to put tracked engagers first
+        const sortByTracked = (a, b) => {
+            const aTracked = tier3Engagers[a.username] ? 1 : 0;
+            const bTracked = tier3Engagers[b.username] ? 1 : 0;
+            return bTracked - aTracked; // Tracked first (1 - 0 = 1, so b comes first)
+        };
+
+        const targetUsers = users.filter(isTarget).sort(sortByTracked);
+        const doubtTargetUsers = users.filter(u => !isTarget(u) && isDoubtTarget(u)).sort(sortByTracked);
+        const otherUsers  = users.filter(u => !isTarget(u) && !isDoubtTarget(u) && !isBlacklisted(u)).sort(sortByTracked);
 
         const win = window.open("", "_blank");
         const doc = win.document;
@@ -303,17 +484,43 @@
         ulTarget.style.padding = "0";
         targetUsers.forEach(u => {
             const li = doc.createElement("li");
+            li.style.marginBottom = "8px";
 
             const a = doc.createElement("a");
             a.href = u.link;
             a.target = "_blank";
-            a.textContent = u.username;
+            // Add tier3 engagement count badge if tracked
+            a.textContent = tier3Engagers[u.username]
+                ? `${u.username} ---- 📊 TRACKED AS TIER 3 ENGAGER. Count:  ${tier3Engagers[u.username].count}`
+                : u.username;
+
+            // Add discard button
+            const discardBtn = doc.createElement("button");
+            discardBtn.textContent = "❌ Discard";
+            discardBtn.style.marginLeft = "8px";
+            discardBtn.style.padding = "2px 8px";
+            discardBtn.style.border = "1px solid #d32f2f";
+            discardBtn.style.borderRadius = "4px";
+            discardBtn.style.background = "white";
+            discardBtn.style.color = "#d32f2f";
+            discardBtn.style.cursor = "pointer";
+            discardBtn.style.fontSize = "11px";
+            discardBtn.addEventListener("click", () => {
+                const discarded = getTier3Discarded();
+                discarded[u.username] = null; // No URL username available from reactions modal
+                saveTier3Discarded(discarded);
+                discardBtn.textContent = "✓ Discarded";
+                discardBtn.disabled = true;
+                discardBtn.style.background = "#e0e0e0";
+                discardBtn.style.cursor = "default";
+            });
 
             const br = doc.createElement("br");
             const small = doc.createElement("small");
             small.textContent = u.description;
 
             li.appendChild(a);
+            li.appendChild(discardBtn);
             li.appendChild(br);
             li.appendChild(small);
 
@@ -331,17 +538,43 @@
         ulDoubt.style.padding = "0";
         doubtTargetUsers.forEach(u => {
             const li = doc.createElement("li");
+            li.style.marginBottom = "8px";
 
             const a = doc.createElement("a");
             a.href = u.link;
             a.target = "_blank";
-            a.textContent = u.username;
+            // Add tier3 engagement count badge if tracked
+            a.textContent = tier3Engagers[u.username]
+                ? `${u.username} ---- 📊 TRACKED AS TIER 3 ENGAGER. Count:  ${tier3Engagers[u.username].count}`
+                : u.username;
+
+            // Add discard button
+            const discardBtn = doc.createElement("button");
+            discardBtn.textContent = "❌ Discard";
+            discardBtn.style.marginLeft = "8px";
+            discardBtn.style.padding = "2px 8px";
+            discardBtn.style.border = "1px solid #d32f2f";
+            discardBtn.style.borderRadius = "4px";
+            discardBtn.style.background = "white";
+            discardBtn.style.color = "#d32f2f";
+            discardBtn.style.cursor = "pointer";
+            discardBtn.style.fontSize = "11px";
+            discardBtn.addEventListener("click", () => {
+                const discarded = getTier3Discarded();
+                discarded[u.username] = null; // No URL username available from reactions modal
+                saveTier3Discarded(discarded);
+                discardBtn.textContent = "✓ Discarded";
+                discardBtn.disabled = true;
+                discardBtn.style.background = "#e0e0e0";
+                discardBtn.style.cursor = "default";
+            });
 
             const br = doc.createElement("br");
             const small = doc.createElement("small");
             small.textContent = u.description;
 
             li.appendChild(a);
+            li.appendChild(discardBtn);
             li.appendChild(br);
             li.appendChild(small);
 
@@ -359,17 +592,43 @@
         ulOther.style.padding = "0";
         otherUsers.forEach(u => {
             const li = doc.createElement("li");
+            li.style.marginBottom = "8px";
 
             const a = doc.createElement("a");
             a.href = u.link;
             a.target = "_blank";
-            a.textContent = u.username;
+            // Add tier3 engagement count badge if tracked
+            a.textContent = tier3Engagers[u.username]
+                ? `${u.username} ---- 📊 TRACKED AS TIER 3 ENGAGER. Count:  ${tier3Engagers[u.username].count}`
+                : u.username;
+
+            // Add discard button
+            const discardBtn = doc.createElement("button");
+            discardBtn.textContent = "❌ Discard";
+            discardBtn.style.marginLeft = "8px";
+            discardBtn.style.padding = "2px 8px";
+            discardBtn.style.border = "1px solid #d32f2f";
+            discardBtn.style.borderRadius = "4px";
+            discardBtn.style.background = "white";
+            discardBtn.style.color = "#d32f2f";
+            discardBtn.style.cursor = "pointer";
+            discardBtn.style.fontSize = "11px";
+            discardBtn.addEventListener("click", () => {
+                const discarded = getTier3Discarded();
+                discarded[u.username] = null; // No URL username available from reactions modal
+                saveTier3Discarded(discarded);
+                discardBtn.textContent = "✓ Discarded";
+                discardBtn.disabled = true;
+                discardBtn.style.background = "#e0e0e0";
+                discardBtn.style.cursor = "default";
+            });
 
             const br = doc.createElement("br");
             const small = doc.createElement("small");
             small.textContent = u.description;
 
             li.appendChild(a);
+            li.appendChild(discardBtn);
             li.appendChild(br);
             li.appendChild(small);
 
@@ -435,9 +694,12 @@
             const linkElem = item.querySelector('a[href*="/in/"]');
             const connectionDegreeEl = item.querySelector('.artdeco-entity-lockup__degree');
     
-            const username = nameElem?.textContent.trim();
+            let username = nameElem?.textContent.trim();
             if (!username) continue;
-    
+
+            // Remove additional name in parentheses (e.g., "Sidney (Sid) M." -> "Sidney M.")
+            username = username.replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+
             const user = {
                 username,
                 description: descElem?.textContent.trim() || '',
