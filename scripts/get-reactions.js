@@ -491,38 +491,57 @@
             const a = doc.createElement("a");
             a.href = u.link;
             a.target = "_blank";
-            // Add tier3 engagement count badge if tracked
-            a.textContent = tier3Engagers[u.username]
-                ? `${u.username} ---- 📊 TRACKED AS TIER 3 ENGAGER. Count:  ${tier3Engagers[u.username].count}`
-                : u.username;
+            a.textContent = u.username;
 
-            // Add discard button
-            const discardBtn = doc.createElement("button");
-            discardBtn.textContent = "❌ Discard";
-            discardBtn.style.marginLeft = "8px";
-            discardBtn.style.padding = "2px 8px";
-            discardBtn.style.border = "1px solid #d32f2f";
-            discardBtn.style.borderRadius = "4px";
-            discardBtn.style.background = "white";
-            discardBtn.style.color = "#d32f2f";
-            discardBtn.style.cursor = "pointer";
-            discardBtn.style.fontSize = "11px";
-            discardBtn.addEventListener("click", () => {
-                const discarded = getTier3Discarded();
-                discarded[u.username] = null; // No URL username available from reactions modal
-                saveTier3Discarded(discarded);
-                discardBtn.textContent = "✓ Discarded";
-                discardBtn.disabled = true;
-                discardBtn.style.background = "#e0e0e0";
-                discardBtn.style.cursor = "default";
-            });
+            // Check if user is tracked engager
+            const isTrackedEngager = tier3Engagers[u.username];
+
+            if (isTrackedEngager) {
+                // Add tracked engager button (disabled)
+                const trackedBtn = doc.createElement("button");
+                trackedBtn.textContent = `📊 Tracked engager: ${tier3Engagers[u.username].count} pings`;
+                trackedBtn.style.marginLeft = "8px";
+                trackedBtn.style.padding = "2px 8px";
+                trackedBtn.style.border = "1px solid #0a66c2";
+                trackedBtn.style.borderRadius = "4px";
+                trackedBtn.style.background = "#e3f2fd";
+                trackedBtn.style.color = "#0a66c2";
+                trackedBtn.style.cursor = "default";
+                trackedBtn.style.fontSize = "11px";
+                trackedBtn.disabled = true;
+
+                li.appendChild(a);
+                li.appendChild(trackedBtn);
+            } else {
+                // Add discard button
+                const discardBtn = doc.createElement("button");
+                discardBtn.textContent = "❌ Discard";
+                discardBtn.style.marginLeft = "8px";
+                discardBtn.style.padding = "2px 8px";
+                discardBtn.style.border = "1px solid #d32f2f";
+                discardBtn.style.borderRadius = "4px";
+                discardBtn.style.background = "white";
+                discardBtn.style.color = "#d32f2f";
+                discardBtn.style.cursor = "pointer";
+                discardBtn.style.fontSize = "11px";
+                discardBtn.addEventListener("click", () => {
+                    const discarded = getTier3Discarded();
+                    discarded[u.username] = null; // No URL username available from reactions modal
+                    saveTier3Discarded(discarded);
+                    discardBtn.textContent = "✓ Discarded";
+                    discardBtn.disabled = true;
+                    discardBtn.style.background = "#e0e0e0";
+                    discardBtn.style.cursor = "default";
+                });
+
+                li.appendChild(a);
+                li.appendChild(discardBtn);
+            }
 
             const br = doc.createElement("br");
             const small = doc.createElement("small");
             small.textContent = u.description;
 
-            li.appendChild(a);
-            li.appendChild(discardBtn);
             li.appendChild(br);
             li.appendChild(small);
 
@@ -545,38 +564,57 @@
             const a = doc.createElement("a");
             a.href = u.link;
             a.target = "_blank";
-            // Add tier3 engagement count badge if tracked
-            a.textContent = tier3Engagers[u.username]
-                ? `${u.username} ---- 📊 TRACKED AS TIER 3 ENGAGER. Count:  ${tier3Engagers[u.username].count}`
-                : u.username;
+            a.textContent = u.username;
 
-            // Add discard button
-            const discardBtn = doc.createElement("button");
-            discardBtn.textContent = "❌ Discard";
-            discardBtn.style.marginLeft = "8px";
-            discardBtn.style.padding = "2px 8px";
-            discardBtn.style.border = "1px solid #d32f2f";
-            discardBtn.style.borderRadius = "4px";
-            discardBtn.style.background = "white";
-            discardBtn.style.color = "#d32f2f";
-            discardBtn.style.cursor = "pointer";
-            discardBtn.style.fontSize = "11px";
-            discardBtn.addEventListener("click", () => {
-                const discarded = getTier3Discarded();
-                discarded[u.username] = null; // No URL username available from reactions modal
-                saveTier3Discarded(discarded);
-                discardBtn.textContent = "✓ Discarded";
-                discardBtn.disabled = true;
-                discardBtn.style.background = "#e0e0e0";
-                discardBtn.style.cursor = "default";
-            });
+            // Check if user is tracked engager
+            const isTrackedEngager = tier3Engagers[u.username];
+
+            if (isTrackedEngager) {
+                // Add tracked engager button (disabled)
+                const trackedBtn = doc.createElement("button");
+                trackedBtn.textContent = `📊 Tracked engager: ${tier3Engagers[u.username].count} pings`;
+                trackedBtn.style.marginLeft = "8px";
+                trackedBtn.style.padding = "2px 8px";
+                trackedBtn.style.border = "1px solid #0a66c2";
+                trackedBtn.style.borderRadius = "4px";
+                trackedBtn.style.background = "#e3f2fd";
+                trackedBtn.style.color = "#0a66c2";
+                trackedBtn.style.cursor = "default";
+                trackedBtn.style.fontSize = "11px";
+                trackedBtn.disabled = true;
+
+                li.appendChild(a);
+                li.appendChild(trackedBtn);
+            } else {
+                // Add discard button
+                const discardBtn = doc.createElement("button");
+                discardBtn.textContent = "❌ Discard";
+                discardBtn.style.marginLeft = "8px";
+                discardBtn.style.padding = "2px 8px";
+                discardBtn.style.border = "1px solid #d32f2f";
+                discardBtn.style.borderRadius = "4px";
+                discardBtn.style.background = "white";
+                discardBtn.style.color = "#d32f2f";
+                discardBtn.style.cursor = "pointer";
+                discardBtn.style.fontSize = "11px";
+                discardBtn.addEventListener("click", () => {
+                    const discarded = getTier3Discarded();
+                    discarded[u.username] = null; // No URL username available from reactions modal
+                    saveTier3Discarded(discarded);
+                    discardBtn.textContent = "✓ Discarded";
+                    discardBtn.disabled = true;
+                    discardBtn.style.background = "#e0e0e0";
+                    discardBtn.style.cursor = "default";
+                });
+
+                li.appendChild(a);
+                li.appendChild(discardBtn);
+            }
 
             const br = doc.createElement("br");
             const small = doc.createElement("small");
             small.textContent = u.description;
 
-            li.appendChild(a);
-            li.appendChild(discardBtn);
             li.appendChild(br);
             li.appendChild(small);
 
@@ -599,38 +637,57 @@
             const a = doc.createElement("a");
             a.href = u.link;
             a.target = "_blank";
-            // Add tier3 engagement count badge if tracked
-            a.textContent = tier3Engagers[u.username]
-                ? `${u.username} ---- 📊 TRACKED AS TIER 3 ENGAGER. Count:  ${tier3Engagers[u.username].count}`
-                : u.username;
+            a.textContent = u.username;
 
-            // Add discard button
-            const discardBtn = doc.createElement("button");
-            discardBtn.textContent = "❌ Discard";
-            discardBtn.style.marginLeft = "8px";
-            discardBtn.style.padding = "2px 8px";
-            discardBtn.style.border = "1px solid #d32f2f";
-            discardBtn.style.borderRadius = "4px";
-            discardBtn.style.background = "white";
-            discardBtn.style.color = "#d32f2f";
-            discardBtn.style.cursor = "pointer";
-            discardBtn.style.fontSize = "11px";
-            discardBtn.addEventListener("click", () => {
-                const discarded = getTier3Discarded();
-                discarded[u.username] = null; // No URL username available from reactions modal
-                saveTier3Discarded(discarded);
-                discardBtn.textContent = "✓ Discarded";
-                discardBtn.disabled = true;
-                discardBtn.style.background = "#e0e0e0";
-                discardBtn.style.cursor = "default";
-            });
+            // Check if user is tracked engager
+            const isTrackedEngager = tier3Engagers[u.username];
+
+            if (isTrackedEngager) {
+                // Add tracked engager button (disabled)
+                const trackedBtn = doc.createElement("button");
+                trackedBtn.textContent = `📊 Tracked engager: ${tier3Engagers[u.username].count} pings`;
+                trackedBtn.style.marginLeft = "8px";
+                trackedBtn.style.padding = "2px 8px";
+                trackedBtn.style.border = "1px solid #0a66c2";
+                trackedBtn.style.borderRadius = "4px";
+                trackedBtn.style.background = "#e3f2fd";
+                trackedBtn.style.color = "#0a66c2";
+                trackedBtn.style.cursor = "default";
+                trackedBtn.style.fontSize = "11px";
+                trackedBtn.disabled = true;
+
+                li.appendChild(a);
+                li.appendChild(trackedBtn);
+            } else {
+                // Add discard button
+                const discardBtn = doc.createElement("button");
+                discardBtn.textContent = "❌ Discard";
+                discardBtn.style.marginLeft = "8px";
+                discardBtn.style.padding = "2px 8px";
+                discardBtn.style.border = "1px solid #d32f2f";
+                discardBtn.style.borderRadius = "4px";
+                discardBtn.style.background = "white";
+                discardBtn.style.color = "#d32f2f";
+                discardBtn.style.cursor = "pointer";
+                discardBtn.style.fontSize = "11px";
+                discardBtn.addEventListener("click", () => {
+                    const discarded = getTier3Discarded();
+                    discarded[u.username] = null; // No URL username available from reactions modal
+                    saveTier3Discarded(discarded);
+                    discardBtn.textContent = "✓ Discarded";
+                    discardBtn.disabled = true;
+                    discardBtn.style.background = "#e0e0e0";
+                    discardBtn.style.cursor = "default";
+                });
+
+                li.appendChild(a);
+                li.appendChild(discardBtn);
+            }
 
             const br = doc.createElement("br");
             const small = doc.createElement("small");
             small.textContent = u.description;
 
-            li.appendChild(a);
-            li.appendChild(discardBtn);
             li.appendChild(br);
             li.appendChild(small);
 
