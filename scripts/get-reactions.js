@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.0.8
+// @version      1.0.9
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -426,10 +426,12 @@
                 const discarded = getTier3Discarded();
                 discarded[user.username] = null; // No URL username available from reactions modal
                 saveTier3Discarded(discarded);
-                discardBtn.textContent = "✓ Discarded";
-                discardBtn.disabled = true;
-                discardBtn.style.background = "#e0e0e0";
-                discardBtn.style.cursor = "default";
+                // Remove the list item from the DOM with a fade effect
+                li.style.transition = "opacity 0.3s ease-out";
+                li.style.opacity = "0";
+                setTimeout(() => {
+                    li.remove();
+                }, 300);
             });
 
             li.appendChild(a);
