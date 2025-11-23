@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.0.9
+// @version      1.1.0
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -395,18 +395,28 @@
         const isTrackedEngager = tier3Engagers[user.username];
 
         if (isTrackedEngager) {
-            // Add tracked engager button (disabled)
+            // Add tracked engager button (clickable to increment count)
             const trackedBtn = doc.createElement("button");
-            trackedBtn.textContent = `📊 Tracked engager: ${tier3Engagers[user.username].count} pings`;
+            trackedBtn.textContent = `📊 Tracked: ${tier3Engagers[user.username].count} pings (click to +1)`;
             trackedBtn.style.marginLeft = "8px";
             trackedBtn.style.padding = "2px 8px";
             trackedBtn.style.border = "1px solid #0a66c2";
             trackedBtn.style.borderRadius = "4px";
             trackedBtn.style.background = "#e3f2fd";
             trackedBtn.style.color = "#0a66c2";
-            trackedBtn.style.cursor = "default";
+            trackedBtn.style.cursor = "pointer";
             trackedBtn.style.fontSize = "11px";
-            trackedBtn.disabled = true;
+            trackedBtn.addEventListener("click", () => {
+                const engagers = getTier3Engagers();
+                engagers[user.username].count += 1;
+                saveTier3Engagers(engagers);
+                trackedBtn.textContent = `📊 Tracked: ${engagers[user.username].count} pings (click to +1)`;
+                // Visual feedback
+                trackedBtn.style.background = "#c8e6c9";
+                setTimeout(() => {
+                    trackedBtn.style.background = "#e3f2fd";
+                }, 200);
+            });
 
             li.appendChild(a);
             li.appendChild(trackedBtn);
