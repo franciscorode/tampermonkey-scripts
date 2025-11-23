@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.0.7
+// @version      1.0.8
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
