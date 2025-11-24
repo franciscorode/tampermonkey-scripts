@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Notion curl generator
 // @namespace    http://tampermonkey.net/
-// @version      0.0.2
+// @version      0.0.3
 // @description  Generate button to copy curl command to create a Notion page
 // @match        https://www.linkedin.com/in/*
 // @grant        GM_getValue
@@ -23,7 +23,7 @@
     const DATABASE_OPTIONS = Object.keys(DATABASE_MAP);
 
     function addButton() {
-        const container = document.querySelectorAll('[data-view-name="premium-custom-button-on-profile-top-card"]')[1] || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
+        const container = document.querySelectorAll('[aria-label="More actions"]')[1].parentElement.parentElement || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
         if (!container) {
             console.error("❌ Container not found.");
             return;
