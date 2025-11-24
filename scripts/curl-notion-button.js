@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Notion curl generator
 // @namespace    http://tampermonkey.net/
-// @version      0.0.3
+// @version      0.0.4
 // @description  Generate button to copy curl command to create a Notion page
 // @match        https://www.linkedin.com/in/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @run-at       document-idle
 // @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/curl-notion-button.js
-// @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/curl-notion-button.js
+// @downloadURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/curl-notion-button.js
 // ==/UserScript==
 
 (function() {
