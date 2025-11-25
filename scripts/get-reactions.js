@@ -116,7 +116,7 @@
 
     setupReactionButtonListeners();
 
-    // ======= TIER3 ENGAGER TRACKING =======
+    // ======= TIER3 USER TRACKING =======
     function normalizeUsername(username) {
         // Remove trailing slashes and query params
         return username ? username.replace(/\/$/, '').split('?')[0] : null;
@@ -128,8 +128,8 @@
         return match ? normalizeUsername(decodeURIComponent(match[1])) : null;
     }
 
-    function getTier3Engagers() {
-        const stored = GM_getValue("tier3_engagers", null);
+    function getTier3Users() {
+        const stored = GM_getValue("tier3_users", null);
         return stored ? JSON.parse(stored) : {};
     }
 
@@ -138,15 +138,15 @@
         return stored ? JSON.parse(stored) : {};
     }
 
-    function saveTier3Engagers(engagers) {
-        GM_setValue("tier3_engagers", JSON.stringify(engagers));
+    function saveTier3Users(users) {
+        GM_setValue("tier3_users", JSON.stringify(users));
     }
 
     function saveTier3Discarded(discarded) {
         GM_setValue("tier3_discarded", JSON.stringify(discarded));
     }
 
-    function addTier3EngagerButton() {
+    function addTier3UserButton() {
         const container = document.querySelectorAll('[aria-label="More actions"]')[1].parentElement.parentElement || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
 
         if (!container) {
@@ -156,7 +156,7 @@
         console.log("✅ Found container for tier3 buttons:", container);
 
         // Check if button already added
-        if (container.parentElement.querySelector('.tier3-engager-btn')) return;
+        if (container.parentElement.querySelector('.tier3-user-btn')) return;
 
         const username = getUsernameFromUrl();
         if (!username) {
@@ -174,10 +174,10 @@
         // Remove additional name in parentheses (e.g., "Sidney (Sid) M." -> "Sidney M.")
         const displayName = displayNameElement.textContent.trim().replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
 
-        // Create "Track as tier3 engager" button
+        // Create "Track as tier3 user" button
         const trackBtn = document.createElement("button");
-        trackBtn.innerText = "🎯 Track as tier3 engager";
-        trackBtn.className = "tier3-engager-btn";
+        trackBtn.innerText = "🎯 Track as tier3 user";
+        trackBtn.className = "tier3-user-btn";
         trackBtn.style.margin = "8px";
         trackBtn.style.padding = "4px 8px";
         trackBtn.style.border = "1px solid #0a66c2";
@@ -188,13 +188,14 @@
         trackBtn.style.fontWeight = "bold";
 
         trackBtn.addEventListener("click", () => {
-            const engagers = getTier3Engagers();
-            if (!engagers[displayName]) {
-                engagers[displayName] = { count: 0, username: username };
+            const users = getTier3Users();
+            if (users[displayName]) {
+                alert(`⚠️ ${displayName} is already tracked as tier3 user`);
+                return;
             }
-            engagers[displayName].count += 1;
-            saveTier3Engagers(engagers);
-            alert(`✅ Tracked ${displayName} as tier3 engager (${engagers[displayName].count} times)`);
+            users[displayName] = { username: username };
+            saveTier3Users(users);
+            alert(`✅ Added ${displayName} as tier3 user`);
         });
 
         container.parentElement.appendChild(trackBtn);
@@ -258,15 +259,15 @@
     // Listen for 'e' and 'd' keys on profile pages
     document.addEventListener('keydown', (e) => {
         if (e.key.toLowerCase() === 'e' && window.location.pathname.includes('/in/')) {
-            console.log("Triggering add tier3 engager button");
-            addTier3EngagerButton();
+            console.log("Triggering add tier3 user button");
+            addTier3UserButton();
         }
         if (e.key.toLowerCase() === 'd' && window.location.pathname.includes('/in/')) {
             console.log("Triggering add tier3 discard button");
             addTier3DiscardButton();
         }
     });
-    // ======= END TIER3 ENGAGER TRACKING =======
+    // ======= END TIER3 USER TRACKING =======
 
     async function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -382,7 +383,7 @@
         countCommentReactions();
     }
 
-    function createUserListItem(doc, user, tier3Engagers) {
+    function createUserListItem(doc, user, tier3Users) {
         const li = doc.createElement("li");
         li.style.marginBottom = "8px";
 
@@ -391,32 +392,22 @@
         a.target = "_blank";
         a.textContent = user.username;
 
-        // Check if user is tracked engager
-        const isTrackedEngager = tier3Engagers[user.username];
+        // Check if user is tracked
+        const isTrackedUser = tier3Users[user.username];
 
-        if (isTrackedEngager) {
-            // Add tracked engager button (clickable to increment count)
+        if (isTrackedUser) {
+            // Add tracked user button
             const trackedBtn = doc.createElement("button");
-            trackedBtn.textContent = `📊 Tracked: ${tier3Engagers[user.username].count} pings (click to +1)`;
+            trackedBtn.textContent = `📊 Tracked as tier3`;
             trackedBtn.style.marginLeft = "8px";
             trackedBtn.style.padding = "2px 8px";
             trackedBtn.style.border = "1px solid #0a66c2";
             trackedBtn.style.borderRadius = "4px";
             trackedBtn.style.background = "#e3f2fd";
             trackedBtn.style.color = "#0a66c2";
-            trackedBtn.style.cursor = "pointer";
+            trackedBtn.style.cursor = "default";
             trackedBtn.style.fontSize = "11px";
-            trackedBtn.addEventListener("click", () => {
-                const engagers = getTier3Engagers();
-                engagers[user.username].count += 1;
-                saveTier3Engagers(engagers);
-                trackedBtn.textContent = `📊 Tracked: ${engagers[user.username].count} pings (click to +1)`;
-                // Visual feedback
-                trackedBtn.style.background = "#c8e6c9";
-                setTimeout(() => {
-                    trackedBtn.style.background = "#e3f2fd";
-                }, 200);
-            });
+            trackedBtn.disabled = true;
 
             li.appendChild(a);
             li.appendChild(trackedBtn);
@@ -486,9 +477,9 @@
 
         // Filter out tier3 discarded users
         const tier3Discarded = getTier3Discarded();
-        const tier3Engagers = getTier3Engagers();
+        const tier3Users = getTier3Users();
 
-        console.log("📊 Tier3 Engagers:", tier3Engagers);
+        console.log("📊 Tier3 Users:", tier3Users);
         console.log("❌ Tier3 Discarded:", tier3Discarded);
 
         const isTier3Discarded = (user) => {
@@ -512,10 +503,10 @@
         const isBlacklisted = (user) =>
             blacklistKeywords.some(k => (user.description || "").toLowerCase().includes(k));
 
-        // Sort function to put tracked engagers first
+        // Sort function to put tracked users first
         const sortByTracked = (a, b) => {
-            const aTracked = tier3Engagers[a.username] ? 1 : 0;
-            const bTracked = tier3Engagers[b.username] ? 1 : 0;
+            const aTracked = tier3Users[a.username] ? 1 : 0;
+            const bTracked = tier3Users[b.username] ? 1 : 0;
             return bTracked - aTracked; // Tracked first (1 - 0 = 1, so b comes first)
         };
 
@@ -561,7 +552,7 @@
         ulTarget.style.listStyle = "none";
         ulTarget.style.padding = "0";
         targetUsers.forEach(u => {
-            ulTarget.appendChild(createUserListItem(doc, u, tier3Engagers));
+            ulTarget.appendChild(createUserListItem(doc, u, tier3Users));
         });
         body.appendChild(ulTarget);
 
@@ -574,7 +565,7 @@
         ulDoubt.style.listStyle = "none";
         ulDoubt.style.padding = "0";
         doubtTargetUsers.forEach(u => {
-            ulDoubt.appendChild(createUserListItem(doc, u, tier3Engagers));
+            ulDoubt.appendChild(createUserListItem(doc, u, tier3Users));
         });
         body.appendChild(ulDoubt);
 
@@ -587,7 +578,7 @@
         ulOther.style.listStyle = "none";
         ulOther.style.padding = "0";
         otherUsers.forEach(u => {
-            ulOther.appendChild(createUserListItem(doc, u, tier3Engagers));
+            ulOther.appendChild(createUserListItem(doc, u, tier3Users));
         });
         body.appendChild(ulOther);
 
