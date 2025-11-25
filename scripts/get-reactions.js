@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.1.0
+// @version      1.1.1
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -33,7 +33,7 @@
         "data visualization","data pipeline","lakehouse","data lake","data warehouse", "Datawarehouse", "datalake",
         "ingeniero de datos", "engenheiro de dados", "data analysis", "Airflow", "Engenheira de Dados",
         "Data Quality", "data platform", "Ingeniería de Datos", "Data Steward", "Data Visualisation", "data analytics",
-        "BI Engineer", "Arquitectura de Datos", "Data Eng", "Analytics Engineer", "Data Enthusiast", 
+        "BI Engineer", "Arquitectura de Datos", "Data Eng", "Analytics Engineer", "Data Enthusiast",
         "Data & Analytics", "Analytics Engineer", "Data Specialist", "Ingeniera de Datos",
         "data", "analyst","ETL developer", "analytics", "Governance", "Data enthusiast", "Alteryx",
         "Data Strategy", "data consultant", "VP of engineering", "redshift", "streaming", "kafka"
@@ -111,8 +111,7 @@
                 }
             }
         });
-        
-             }
+    }
 
     setupReactionButtonListeners();
 
@@ -146,33 +145,48 @@
         GM_setValue("tier3_discarded", JSON.stringify(discarded));
     }
 
-    function addTier3UserButton() {
-        const container = document.querySelectorAll('[aria-label="More actions"]')[1].parentElement.parentElement || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
+    function getButtonsContainer() {
+        const container = document.querySelectorAll('[data-view-name="profile-primary-message"]')[1]?.parentElement
+            || document.querySelectorAll('[aria-label="More actions"]')[1]?.parentElement?.parentElement
+            || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
 
         if (!container) {
-            console.error("❌ Container not found for tier3 buttons.");
-            return;
+            console.error("❌ Container not found for buttons.");
+            alert("❌ Error: Container not found for buttons.");
+            throw new Error("Container not found for buttons");
         }
-        console.log("✅ Found container for tier3 buttons:", container);
+        return container;
+    }
+
+    function getProfileUsername() {
+        const username = getUsernameFromUrl();
+        if (!username) {
+            console.error("❌ Could not extract username from URL.");
+            alert("❌ Error: Could not extract username from URL.");
+            throw new Error("Could not extract username from URL");
+        }
+        return username;
+    }
+
+    function getProfileDisplayName() {
+        const displayNameElement = document.querySelector('h1') || document.querySelectorAll('[data-view-name="profile-top-card-verified-badge"]')[0];
+        if (!displayNameElement) {
+            console.error("❌ Could not find display name element on the page.");
+            alert("❌ Error: Could not find profile name on the page. Make sure you're on a LinkedIn profile page.");
+            throw new Error("Could not find display name element on the page");
+        }
+        // Remove additional name in parentheses (e.g., "Sidney (Sid) M." -> "Sidney M.")
+        return displayNameElement.textContent.trim().replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function addTier3UserButton() {
+        const container = getButtonsContainer();
 
         // Check if button already added
         if (container.parentElement.querySelector('.tier3-user-btn')) return;
 
-        const username = getUsernameFromUrl();
-        if (!username) {
-            console.error("❌ Could not extract username from URL.");
-            return;
-        }
-
-        // Get display name from the page
-        const displayNameElement = document.querySelector('h1');
-        if (!displayNameElement) {
-            console.error("❌ Could not find display name element on the page.");
-            alert("❌ Error: Could not find profile name on the page. Make sure you're on a LinkedIn profile page.");
-            return;
-        }
-        // Remove additional name in parentheses (e.g., "Sidney (Sid) M." -> "Sidney M.")
-        const displayName = displayNameElement.textContent.trim().replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+        const username = getProfileUsername();
+        const displayName = getProfileDisplayName();
 
         // Create "Track as tier3 user" button
         const trackBtn = document.createElement("button");
@@ -202,32 +216,13 @@
     }
 
     function addTier3DiscardButton() {
-        const container = document.querySelectorAll('[aria-label="More actions"]')[1].parentElement.parentElement || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
-
-        if (!container) {
-            console.error("❌ Container not found for tier3 buttons.");
-            return;
-        }
-        console.log("✅ Found container for tier3 buttons:", container);
+        const container = getButtonsContainer();
 
         // Check if button already added
         if (container.parentElement.querySelector('.tier3-discard-btn')) return;
 
-        const username = getUsernameFromUrl();
-        if (!username) {
-            console.error("❌ Could not extract username from URL.");
-            return;
-        }
-
-        // Get display name from the page
-        const displayNameElement = document.querySelector('h1');
-        if (!displayNameElement) {
-            console.error("❌ Could not find display name element on the page.");
-            alert("❌ Error: Could not find profile name on the page. Make sure you're on a LinkedIn profile page.");
-            return;
-        }
-        // Remove additional name in parentheses (e.g., "Sidney (Sid) M." -> "Sidney M.")
-        const displayName = displayNameElement.textContent.trim().replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+        const username = getProfileUsername();
+        const displayName = getProfileDisplayName();
 
         // Create "Discard as tier3" button
         const discardBtn = document.createElement("button");
@@ -587,7 +582,7 @@
         pre.textContent = JSON.stringify(otherUsers);
         body.appendChild(pre);
     }
-    
+
     async function scrollToBottomUntilEnds() {
         const scrollContainer = document.querySelector(
             '.artdeco-modal__content ,social-details-reactors-modal__content'
@@ -596,24 +591,24 @@
             console.error("❌ Scrollable container not found.");
             return;
         }
-    
+
         console.log("✅ Found scroll container:", scrollContainer);
-    
+
         let previousHeight = 0;
         let attempts = 0;
         const MAX_ATTEMPTS = 200;
-    
+
         while (attempts < MAX_ATTEMPTS) {
             scrollContainer.scrollTop = scrollContainer.scrollHeight;
             scrollContainer.dispatchEvent(new Event('scroll', { bubbles: true }));
-    
+
             // Random wait between 2s and 4s
-            const waitTime = Math.floor(Math.random() * 2000) + 2000; 
+            const waitTime = Math.floor(Math.random() * 2000) + 2000;
             await sleep(waitTime);
-    
+
             attempts++;
             console.log(`⬇️ Scrolled attempt #${attempts} (waited ${waitTime}ms)`);
-    
+
             if (scrollContainer.scrollHeight === previousHeight) {
                 console.log("📄 No more content to load.");
                 break;
@@ -626,10 +621,10 @@
         const modalContent = document.querySelector('.artdeco-modal');
         const items = [...modalContent.querySelectorAll('.artdeco-list__item')];
         console.log(`User items: ${items.length}`);
-    
+
         const connections = [];
         const noConnections = [];
-    
+
         for (const item of items) {
             let nameElem = item.querySelector('span[dir]');
             if (!nameElem) {
@@ -639,7 +634,7 @@
             const descElem = item.querySelector('.artdeco-entity-lockup__caption');
             const linkElem = item.querySelector('a[href*="/in/"]');
             const connectionDegreeEl = item.querySelector('.artdeco-entity-lockup__degree');
-    
+
             let username = nameElem?.textContent.trim();
             if (!username) continue;
 
