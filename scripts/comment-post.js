@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to make comments on LinkedIn posts
 // @namespace    http://tampermonkey.net/
-// @version      1.0.10
+// @version      1.0.11
 // @description  Adds a button to copy AI prompt to generate comments to a post
 // @author       ChatGPT
 // @match        https://www.linkedin.com/feed/*
@@ -99,7 +99,7 @@
     ⊘ SKIP - This is likely an engagement pod
     Reason: Comments >= reactions suggests artificial engagement gaming
 
-    [If score ≥ 6:]
+    [If score ≥ 7:]
     ✓ WORTH COMMENTING
 
     Then provide 3–5 comment options that are:
@@ -110,11 +110,11 @@
     - Insightful or funny, but never salesy
     - Based on real experience, not generic observations
 
-    [If score 3-5:]
+    [If score 4-6:]
     👍 REACT ONLY - Give it a like or reaction
     Reason: [brief explanation of why it's worth acknowledging but not commenting]
 
-    [If score < 3:]
+    [If score < 4:]
     ⊘ IGNORE - Not worth your time
     Reason: [brief reason why the score is low - mention if timing/engagement is a factor]
 
@@ -199,7 +199,7 @@
     ⊘ SKIP - This is likely an engagement pod
     Reason: Comments >= reactions suggests artificial engagement gaming
 
-    [If score ≥ 5:]
+    [If score ≥ 7:]
     ✓ WORTH COMMENTING
 
     Then provide 3–5 comment options that are:
@@ -210,11 +210,11 @@
     - Relatable or funny, showing you "get it" as a fellow builder
     - Never salesy or self-promotional
 
-    [If score 2-4:]
+    [If score 4-6:]
     👍 REACT ONLY - Give it a like or reaction
     Reason: [brief explanation of why it's worth acknowledging but not commenting]
 
-    [If score < 2:]
+    [If score < 4:]
     ⊘ IGNORE - Not worth your time
     Reason: [brief reason why the score is low - mention if timing/engagement is a factor]
 
