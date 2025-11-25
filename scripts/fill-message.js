@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Message Template Filler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.10
+// @version      0.1.11
 // @description  Auto-fill LinkedIn message template with name and area
 // @match        https://www.linkedin.com/mynetwork/invite-connect/connections/
 // @match        https://www.linkedin.com/in/*
@@ -201,9 +201,9 @@
             console.log("Triggering fill message");
             fillMessage();
         }
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
-            console.log("Triggering add button to track person as comment reactor");
-            addCommentReactorButton();
-        }
+        // if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+        //     console.log("Triggering add button to track person as comment reactor");
+        //     addCommentReactorButton();
+        // }
     });
 })();

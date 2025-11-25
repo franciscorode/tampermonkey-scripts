@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.1.2
+// @version      1.1.3
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -251,9 +251,9 @@
         container.parentElement.appendChild(discardBtn);
     }
 
-    // Listen for '3' and 'd' keys on profile pages
+    // Listen for 't' and 'd' keys on profile pages
     document.addEventListener('keydown', (e) => {
-        if (e.key === '3' && window.location.pathname.includes('/in/')) {
+        if (e.key.toLowerCase() === 't' && window.location.pathname.includes('/in/')) {
             console.log("Triggering add tier3 user button");
             addTier3UserButton();
         }
