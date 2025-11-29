@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      2.0.0
+// @version      2.0.1
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -139,7 +139,8 @@
     function getButtonsContainer() {
         const container = document.querySelectorAll('[data-view-name="profile-primary-message"]')[1]?.parentElement
             || document.querySelectorAll('[aria-label="More actions"]')[1]?.parentElement?.parentElement
-            || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1];
+            || document.querySelectorAll('[data-view-name="profile-overflow-button"]')[1]
+            || document.querySelectorAll('.pv-recent-activity-top-card__profile-actions')[0]
 
         if (!container) {
             console.error("❌ Container not found for buttons.");
@@ -160,7 +161,7 @@
     }
 
     function getProfileDisplayName() {
-        const displayNameElement = document.querySelector('h1') || document.querySelectorAll('[data-view-name="profile-top-card-verified-badge"]')[0];
+        const displayNameElement = document.querySelector('h1') || document.querySelector('h3') || document.querySelectorAll('[data-view-name="profile-top-card-verified-badge"]')[0];
         if (!displayNameElement) {
             console.error("❌ Could not find display name element on the page.");
             alert("❌ Error: Could not find profile name on the page. Make sure you're on a LinkedIn profile page.");
