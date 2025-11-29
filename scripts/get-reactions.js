@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      1.1.3
+// @version      2.0.0
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -115,7 +115,7 @@
 
     setupReactionButtonListeners();
 
-    // ======= TIER3 USER TRACKING =======
+    // ======= TIER USER TRACKING =======
     function normalizeUsername(username) {
         // Remove trailing slashes and query params
         return username ? username.replace(/\/$/, '').split('?')[0] : null;
@@ -127,22 +127,13 @@
         return match ? normalizeUsername(decodeURIComponent(match[1])) : null;
     }
 
-    function getTier3Users() {
-        const stored = GM_getValue("tier3_users", null);
+    function getTierDiscarded() {
+        const stored = GM_getValue("tier_discarded", null);
         return stored ? JSON.parse(stored) : {};
     }
 
-    function getTier3Discarded() {
-        const stored = GM_getValue("tier3_discarded", null);
-        return stored ? JSON.parse(stored) : {};
-    }
-
-    function saveTier3Users(users) {
-        GM_setValue("tier3_users", JSON.stringify(users));
-    }
-
-    function saveTier3Discarded(discarded) {
-        GM_setValue("tier3_discarded", JSON.stringify(discarded));
+    function saveTierDiscarded(discarded) {
+        GM_setValue("tier_discarded", JSON.stringify(discarded));
     }
 
     function getButtonsContainer() {
@@ -179,55 +170,19 @@
         return displayNameElement.textContent.trim().replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
-    function addTier3UserButton() {
+    function addTierDiscardButton() {
         const container = getButtonsContainer();
 
         // Check if button already added
-        if (container.parentElement.querySelector('.tier3-user-btn')) return;
+        if (container.parentElement.querySelector('.tier-discard-btn')) return;
 
         const username = getProfileUsername();
         const displayName = getProfileDisplayName();
 
-        // Create "Track as tier3 user" button
-        const trackBtn = document.createElement("button");
-        trackBtn.innerText = "🎯 Track as tier3 user";
-        trackBtn.className = "tier3-user-btn";
-        trackBtn.style.margin = "8px";
-        trackBtn.style.padding = "4px 8px";
-        trackBtn.style.border = "1px solid #0a66c2";
-        trackBtn.style.borderRadius = "12px";
-        trackBtn.style.background = "white";
-        trackBtn.style.color = "#0a66c2";
-        trackBtn.style.cursor = "pointer";
-        trackBtn.style.fontWeight = "bold";
-
-        trackBtn.addEventListener("click", () => {
-            const users = getTier3Users();
-            if (users[displayName]) {
-                alert(`⚠️ ${displayName} is already tracked as tier3 user`);
-                return;
-            }
-            users[displayName] = { username: username };
-            saveTier3Users(users);
-            alert(`✅ Added ${displayName} as tier3 user`);
-        });
-
-        container.parentElement.appendChild(trackBtn);
-    }
-
-    function addTier3DiscardButton() {
-        const container = getButtonsContainer();
-
-        // Check if button already added
-        if (container.parentElement.querySelector('.tier3-discard-btn')) return;
-
-        const username = getProfileUsername();
-        const displayName = getProfileDisplayName();
-
-        // Create "Discard as tier3" button
+        // Create "Discard as tier" button
         const discardBtn = document.createElement("button");
-        discardBtn.innerText = "❌ Discard as tier3";
-        discardBtn.className = "tier3-discard-btn";
+        discardBtn.innerText = "❌ Discard as tier";
+        discardBtn.className = "tier-discard-btn";
         discardBtn.style.margin = "8px";
         discardBtn.style.padding = "4px 8px";
         discardBtn.style.border = "1px solid #d32f2f";
@@ -238,11 +193,11 @@
         discardBtn.style.fontWeight = "bold";
 
         discardBtn.addEventListener("click", () => {
-            const discarded = getTier3Discarded();
+            const discarded = getTierDiscarded();
             if (!discarded[displayName]) {
                 discarded[displayName] = username;
-                saveTier3Discarded(discarded);
-                alert(`✅ Discarded ${displayName} as tier3`);
+                saveTierDiscarded(discarded);
+                alert(`✅ Discarded ${displayName} as tier`);
             } else {
                 alert(`ℹ️ ${displayName} is already discarded`);
             }
@@ -251,18 +206,14 @@
         container.parentElement.appendChild(discardBtn);
     }
 
-    // Listen for 't' and 'd' keys on profile pages
+    // Listen for 'd' key on profile pages
     document.addEventListener('keydown', (e) => {
-        if (e.key.toLowerCase() === 't' && window.location.pathname.includes('/in/')) {
-            console.log("Triggering add tier3 user button");
-            addTier3UserButton();
-        }
         if (e.key.toLowerCase() === 'd' && window.location.pathname.includes('/in/')) {
-            console.log("Triggering add tier3 discard button");
-            addTier3DiscardButton();
+            console.log("Triggering add tier discard button");
+            addTierDiscardButton();
         }
     });
-    // ======= END TIER3 USER TRACKING =======
+    // ======= END TIER USER TRACKING =======
 
     async function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -378,61 +329,40 @@
         countCommentReactions();
     }
 
-    function createUserListItem(doc, user, tier3Users) {
+    function createUserListItem(doc, user) {
         const li = doc.createElement("li");
         li.style.marginBottom = "8px";
 
         const a = doc.createElement("a");
         a.href = user.link;
         a.target = "_blank";
-        a.textContent = user.username;
+        a.textContent = user.displayName;
 
-        // Check if user is tracked
-        const isTrackedUser = tier3Users[user.username];
+        // Add discard button
+        const discardBtn = doc.createElement("button");
+        discardBtn.textContent = "❌ Discard";
+        discardBtn.style.marginLeft = "8px";
+        discardBtn.style.padding = "2px 8px";
+        discardBtn.style.border = "1px solid #d32f2f";
+        discardBtn.style.borderRadius = "4px";
+        discardBtn.style.background = "white";
+        discardBtn.style.color = "#d32f2f";
+        discardBtn.style.cursor = "pointer";
+        discardBtn.style.fontSize = "11px";
+        discardBtn.addEventListener("click", () => {
+            const discarded = getTierDiscarded();
+            discarded[user.displayName] = null; // No URL username available from reactions modal
+            saveTierDiscarded(discarded);
+            // Remove the list item from the DOM with a fade effect
+            li.style.transition = "opacity 0.3s ease-out";
+            li.style.opacity = "0";
+            setTimeout(() => {
+                li.remove();
+            }, 300);
+        });
 
-        if (isTrackedUser) {
-            // Add tracked user button
-            const trackedBtn = doc.createElement("button");
-            trackedBtn.textContent = `📊 Tracked as tier3`;
-            trackedBtn.style.marginLeft = "8px";
-            trackedBtn.style.padding = "2px 8px";
-            trackedBtn.style.border = "1px solid #0a66c2";
-            trackedBtn.style.borderRadius = "4px";
-            trackedBtn.style.background = "#e3f2fd";
-            trackedBtn.style.color = "#0a66c2";
-            trackedBtn.style.cursor = "default";
-            trackedBtn.style.fontSize = "11px";
-            trackedBtn.disabled = true;
-
-            li.appendChild(a);
-            li.appendChild(trackedBtn);
-        } else {
-            // Add discard button
-            const discardBtn = doc.createElement("button");
-            discardBtn.textContent = "❌ Discard";
-            discardBtn.style.marginLeft = "8px";
-            discardBtn.style.padding = "2px 8px";
-            discardBtn.style.border = "1px solid #d32f2f";
-            discardBtn.style.borderRadius = "4px";
-            discardBtn.style.background = "white";
-            discardBtn.style.color = "#d32f2f";
-            discardBtn.style.cursor = "pointer";
-            discardBtn.style.fontSize = "11px";
-            discardBtn.addEventListener("click", () => {
-                const discarded = getTier3Discarded();
-                discarded[user.username] = null; // No URL username available from reactions modal
-                saveTier3Discarded(discarded);
-                // Remove the list item from the DOM with a fade effect
-                li.style.transition = "opacity 0.3s ease-out";
-                li.style.opacity = "0";
-                setTimeout(() => {
-                    li.remove();
-                }, 300);
-            });
-
-            li.appendChild(a);
-            li.appendChild(discardBtn);
-        }
+        li.appendChild(a);
+        li.appendChild(discardBtn);
 
         const br = doc.createElement("br");
         const small = doc.createElement("small");
@@ -470,25 +400,22 @@
             return;
         }
 
-        // Filter out tier3 discarded users
-        const tier3Discarded = getTier3Discarded();
-        const tier3Users = getTier3Users();
+        // Filter out tier discarded users
+        const tierDiscarded = getTierDiscarded();
 
-        console.log("📊 Tier3 Users:", tier3Users);
-        console.log("❌ Tier3 Discarded:", tier3Discarded);
+        console.log("❌ Tier Discarded:", tierDiscarded);
 
-        const isTier3Discarded = (user) => {
-            // Match by display name (user.username is the display name from reactions modal)
-            const isDiscarded = tier3Discarded[user.username];
+        const isTierDiscarded = (user) => {
+            const isDiscarded = user.displayName in tierDiscarded;
             if (isDiscarded) {
-                console.log("🚫 Filtering out discarded user:", user.username, "(username:", isDiscarded, ")");
+                console.log("🚫 Filtering out discarded user:", user.displayName);
             }
             return isDiscarded;
         };
 
         // Filter out discarded users
         const usersBeforeFilter = users.length;
-        users = users.filter(u => !isTier3Discarded(u));
+        users = users.filter(u => !isTierDiscarded(u));
         console.log(`Filtered ${usersBeforeFilter - users.length} discarded users. Remaining: ${users.length}`);
 
         const isTarget = (user) =>
@@ -498,16 +425,9 @@
         const isBlacklisted = (user) =>
             blacklistKeywords.some(k => (user.description || "").toLowerCase().includes(k));
 
-        // Sort function to put tracked users first
-        const sortByTracked = (a, b) => {
-            const aTracked = tier3Users[a.username] ? 1 : 0;
-            const bTracked = tier3Users[b.username] ? 1 : 0;
-            return bTracked - aTracked; // Tracked first (1 - 0 = 1, so b comes first)
-        };
-
-        const targetUsers = users.filter(isTarget).sort(sortByTracked);
-        const doubtTargetUsers = users.filter(u => !isTarget(u) && isDoubtTarget(u)).sort(sortByTracked);
-        const otherUsers  = users.filter(u => !isTarget(u) && !isDoubtTarget(u) && !isBlacklisted(u)).sort(sortByTracked);
+        const targetUsers = users.filter(isTarget);
+        const doubtTargetUsers = users.filter(u => !isTarget(u) && isDoubtTarget(u));
+        const otherUsers  = users.filter(u => !isTarget(u) && !isDoubtTarget(u) && !isBlacklisted(u));
 
         const win = window.open("", "_blank");
         const doc = win.document;
@@ -547,7 +467,7 @@
         ulTarget.style.listStyle = "none";
         ulTarget.style.padding = "0";
         targetUsers.forEach(u => {
-            ulTarget.appendChild(createUserListItem(doc, u, tier3Users));
+            ulTarget.appendChild(createUserListItem(doc, u));
         });
         body.appendChild(ulTarget);
 
@@ -560,7 +480,7 @@
         ulDoubt.style.listStyle = "none";
         ulDoubt.style.padding = "0";
         doubtTargetUsers.forEach(u => {
-            ulDoubt.appendChild(createUserListItem(doc, u, tier3Users));
+            ulDoubt.appendChild(createUserListItem(doc, u));
         });
         body.appendChild(ulDoubt);
 
@@ -573,7 +493,7 @@
         ulOther.style.listStyle = "none";
         ulOther.style.padding = "0";
         otherUsers.forEach(u => {
-            ulOther.appendChild(createUserListItem(doc, u, tier3Users));
+            ulOther.appendChild(createUserListItem(doc, u));
         });
         body.appendChild(ulOther);
 
@@ -635,14 +555,14 @@
             const linkElem = item.querySelector('a[href*="/in/"]');
             const connectionDegreeEl = item.querySelector('.artdeco-entity-lockup__degree');
 
-            let username = nameElem?.textContent.trim();
-            if (!username) continue;
+            let displayName = nameElem?.textContent.trim();
+            if (!displayName) continue;
 
             // Remove additional name in parentheses (e.g., "Sidney (Sid) M." -> "Sidney M.")
-            username = username.replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+            displayName = displayName.replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
 
             const user = {
-                username,
+                displayName,
                 description: descElem?.textContent.trim() || '',
                 link: linkElem ? linkElem.href : ''
             };
@@ -706,8 +626,8 @@
         const allUsers = getReactors();
         const alreadyStored = getStoredUsernames(itemId, itemType);
 
-        let newNoConnectionUsers = allUsers.noConnections.filter(u => !alreadyStored.includes(u.username));
-        let newConnectionUsers = allUsers.connections.filter(u => !alreadyStored.includes(u.username));
+        let newNoConnectionUsers = allUsers.noConnections.filter(u => !alreadyStored.includes(u.displayName));
+        let newConnectionUsers = allUsers.connections.filter(u => !alreadyStored.includes(u.displayName));
 
         console.log("New no connected users that reacted: ", newNoConnectionUsers.length)
         console.log("New already connected users that reacted: ", newConnectionUsers.length)
@@ -723,7 +643,7 @@
             console.log("No new users found.");
         } else {
             console.log("New users found:", newNoConnectionUsers.length + newConnectionUsers.length);
-            const updatedUsernames = [...alreadyStored, ...newNoConnectionUsers.map(u => u.username), ...newConnectionUsers.map(u => u.username)];
+            const updatedUsernames = [...alreadyStored, ...newNoConnectionUsers.map(u => u.displayName), ...newConnectionUsers.map(u => u.displayName)];
             storeUsernames(itemId, itemType, updatedUsernames);
         }
 
