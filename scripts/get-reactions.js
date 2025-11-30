@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      2.0.1
+// @version      2.0.2
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -161,7 +161,7 @@
     }
 
     function getProfileDisplayName() {
-        const displayNameElement = document.querySelector('h1') || document.querySelector('h3') || document.querySelectorAll('[data-view-name="profile-top-card-verified-badge"]')[0];
+        const displayNameElement = document.querySelectorAll('[data-view-name="profile-top-card-verified-badge"]')[0] || document.querySelector('h1') || document.querySelector('h3');
         if (!displayNameElement) {
             console.error("❌ Could not find display name element on the page.");
             alert("❌ Error: Could not find profile name on the page. Make sure you're on a LinkedIn profile page.");
