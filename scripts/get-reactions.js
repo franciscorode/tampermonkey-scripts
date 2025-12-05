@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      2.1.0
+// @version      2.1.1
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -197,6 +197,7 @@
 
         const discardBtn = document.createElement("button");
         discardBtn.className = className;
+        discardBtn.title = `${displayName}\n@${username || 'unknown'}`;
         discardBtn.style.padding = "2px 6px";
         discardBtn.style.borderRadius = "8px";
         discardBtn.style.fontWeight = "bold";
