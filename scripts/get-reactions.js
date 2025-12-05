@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      2.0.3
+// @version      2.1.0
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
 // @match        https://www.linkedin.com/in/*
 // @match        https://www.linkedin.com/posts/*
 // @match        https://www.linkedin.com/feed/update/*
+// @match        https://www.linkedin.com/feed/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @updateURL    https://raw.githubusercontent.com/franciscorode/tampermonkey-scripts/refs/heads/main/scripts/get-reactions.js
@@ -171,6 +172,57 @@
         return displayNameElement.textContent.trim().replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
+    function setDiscardedButtonStyle(btn) {
+        btn.innerText = "☑️ Discarded";
+        btn.style.border = "1px solid #1976d2";
+        btn.style.background = "#e3f2fd";
+        btn.style.color = "#1976d2";
+        btn.style.cursor = "default";
+        btn.disabled = true;
+    }
+
+    function setActiveButtonStyle(btn) {
+        btn.innerText = "❌ Discard";
+        btn.style.border = "1px solid #d32f2f";
+        btn.style.background = "white";
+        btn.style.color = "#d32f2f";
+        btn.style.cursor = "pointer";
+    }
+
+    function createDiscardButton(displayName, username, options = {}) {
+        const { className = 'tier-discard-btn', stopPropagation = false } = options;
+
+        const discarded = getTierDiscarded();
+        const isAlreadyDiscarded = displayName in discarded;
+
+        const discardBtn = document.createElement("button");
+        discardBtn.className = className;
+        discardBtn.style.padding = "2px 6px";
+        discardBtn.style.borderRadius = "8px";
+        discardBtn.style.fontWeight = "bold";
+        discardBtn.style.fontSize = "11px";
+
+        if (isAlreadyDiscarded) {
+            setDiscardedButtonStyle(discardBtn);
+        } else {
+            setActiveButtonStyle(discardBtn);
+            discardBtn.addEventListener("click", (e) => {
+                if (stopPropagation) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                const discarded = getTierDiscarded();
+                if (!discarded[displayName]) {
+                    discarded[displayName] = username;
+                    saveTierDiscarded(discarded);
+                    setDiscardedButtonStyle(discardBtn);
+                }
+            });
+        }
+
+        return discardBtn;
+    }
+
     function addTierDiscardButton() {
         const container = getButtonsContainer();
 
@@ -180,54 +232,73 @@
         const username = getProfileUsername();
         const displayName = getProfileDisplayName();
 
-        // Check if user is already discarded
-        const discarded = getTierDiscarded();
-        const isAlreadyDiscarded = displayName in discarded;
-
-        // Create "Discard as tier" button
-        const discardBtn = document.createElement("button");
-        discardBtn.className = "tier-discard-btn";
+        const discardBtn = createDiscardButton(displayName, username);
         discardBtn.style.margin = "8px";
         discardBtn.style.padding = "4px 8px";
         discardBtn.style.borderRadius = "12px";
-        discardBtn.style.fontWeight = "bold";
-
-        if (isAlreadyDiscarded) {
-            discardBtn.innerText = "☑️ Already discarded";
-            discardBtn.style.border = "1px solid #1976d2";
-            discardBtn.style.background = "#e3f2fd";
-            discardBtn.style.color = "#1976d2";
-            discardBtn.style.cursor = "default";
-            discardBtn.disabled = true;
-        } else {
-            discardBtn.innerText = "❌ Discard as tier";
-            discardBtn.style.border = "1px solid #d32f2f";
-            discardBtn.style.background = "white";
-            discardBtn.style.color = "#d32f2f";
-            discardBtn.style.cursor = "pointer";
-
-            discardBtn.addEventListener("click", () => {
-                const discarded = getTierDiscarded();
-                if (!discarded[displayName]) {
-                    discarded[displayName] = username;
-                    saveTierDiscarded(discarded);
-                    alert(`✅ Discarded ${displayName} as tier`);
-                } else {
-                    alert(`ℹ️ ${displayName} is already discarded`);
-                }
-            });
-        }
 
         container.parentElement.appendChild(discardBtn);
     }
 
-    // Listen for 'd' key on profile pages
+    // Listen for 'd' key on profile pages and feed page
     document.addEventListener('keydown', (e) => {
-        if (e.key.toLowerCase() === 'd' && window.location.pathname.includes('/in/')) {
-            console.log("Triggering add tier discard button");
-            addTierDiscardButton();
+        if (e.key.toLowerCase() === 'd') {
+            if (window.location.pathname.includes('/in/')) {
+                console.log("Triggering add tier discard button");
+                addTierDiscardButton();
+            } else if (window.location.pathname.startsWith('/feed')) {
+                console.log("Triggering add feed discard buttons");
+                addFeedDiscardButtonsToAllPosts();
+            }
         }
     });
+
+    // ======= FEED PAGE DISCARD BUTTONS =======
+    function extractUsernameFromFeedPost(actorMeta) {
+        const linkEl = actorMeta.querySelector('a.update-components-actor__meta-link[href*="/in/"]');
+        if (!linkEl) return null;
+        const href = linkEl.href;
+        const match = href.match(/\/in\/([^\/\?]+)/);
+        return match ? normalizeUsername(decodeURIComponent(match[1])) : null;
+    }
+
+    function extractDisplayNameFromFeedPost(actorMeta) {
+        const nameEl = actorMeta.querySelector('.update-components-actor__single-line-truncate span[aria-hidden="true"]');
+        if (!nameEl) return null;
+        return nameEl.textContent.trim();
+    }
+
+    function addFeedDiscardButton(actorMeta) {
+        // Check if button already added
+        if (actorMeta.querySelector('.feed-tier-discard-btn')) return;
+
+        const username = extractUsernameFromFeedPost(actorMeta);
+        const displayName = extractDisplayNameFromFeedPost(actorMeta);
+
+        if (!displayName) {
+            console.log("Could not extract display name from feed post");
+            return;
+        }
+
+        const discardBtn = createDiscardButton(displayName, username, {
+            className: 'feed-tier-discard-btn',
+            stopPropagation: true
+        });
+        discardBtn.style.marginLeft = "8px";
+
+        actorMeta.appendChild(discardBtn);
+    }
+
+    function addFeedDiscardButtonsToAllPosts() {
+        const actorMetas = document.querySelectorAll('.update-components-actor__meta');
+        actorMetas.forEach(actorMeta => {
+            console.log("Adding discard button to feed post actor met, actorMeta: ", actorMeta);
+            addFeedDiscardButton(actorMeta);
+        });
+        console.log(`✅ Added discard buttons to ${actorMetas.length} feed posts`);
+    }
+    // ======= END FEED PAGE DISCARD BUTTONS =======
+
     // ======= END TIER USER TRACKING =======
 
     async function sleep(ms) {
