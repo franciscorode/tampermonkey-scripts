@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      2.0.2
+// @version      2.0.3
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -180,29 +180,43 @@
         const username = getProfileUsername();
         const displayName = getProfileDisplayName();
 
+        // Check if user is already discarded
+        const discarded = getTierDiscarded();
+        const isAlreadyDiscarded = displayName in discarded;
+
         // Create "Discard as tier" button
         const discardBtn = document.createElement("button");
-        discardBtn.innerText = "❌ Discard as tier";
         discardBtn.className = "tier-discard-btn";
         discardBtn.style.margin = "8px";
         discardBtn.style.padding = "4px 8px";
-        discardBtn.style.border = "1px solid #d32f2f";
         discardBtn.style.borderRadius = "12px";
-        discardBtn.style.background = "white";
-        discardBtn.style.color = "#d32f2f";
-        discardBtn.style.cursor = "pointer";
         discardBtn.style.fontWeight = "bold";
 
-        discardBtn.addEventListener("click", () => {
-            const discarded = getTierDiscarded();
-            if (!discarded[displayName]) {
-                discarded[displayName] = username;
-                saveTierDiscarded(discarded);
-                alert(`✅ Discarded ${displayName} as tier`);
-            } else {
-                alert(`ℹ️ ${displayName} is already discarded`);
-            }
-        });
+        if (isAlreadyDiscarded) {
+            discardBtn.innerText = "☑️ Already discarded";
+            discardBtn.style.border = "1px solid #1976d2";
+            discardBtn.style.background = "#e3f2fd";
+            discardBtn.style.color = "#1976d2";
+            discardBtn.style.cursor = "default";
+            discardBtn.disabled = true;
+        } else {
+            discardBtn.innerText = "❌ Discard as tier";
+            discardBtn.style.border = "1px solid #d32f2f";
+            discardBtn.style.background = "white";
+            discardBtn.style.color = "#d32f2f";
+            discardBtn.style.cursor = "pointer";
+
+            discardBtn.addEventListener("click", () => {
+                const discarded = getTierDiscarded();
+                if (!discarded[displayName]) {
+                    discarded[displayName] = username;
+                    saveTierDiscarded(discarded);
+                    alert(`✅ Discarded ${displayName} as tier`);
+                } else {
+                    alert(`ℹ️ ${displayName} is already discarded`);
+                }
+            });
+        }
 
         container.parentElement.appendChild(discardBtn);
     }
