@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      2.1.1
+// @version      2.2.0
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -425,6 +425,17 @@
         a.target = "_blank";
         a.textContent = user.displayName;
 
+        // Add connection degree badge
+        const degreeBadge = doc.createElement("span");
+        degreeBadge.textContent = user.connectionDegree || "";
+        degreeBadge.style.marginLeft = "6px";
+        degreeBadge.style.padding = "1px 6px";
+        degreeBadge.style.background = "#e0e0e0";
+        degreeBadge.style.color = "#666";
+        degreeBadge.style.borderRadius = "10px";
+        degreeBadge.style.fontSize = "15px";
+        degreeBadge.style.fontWeight = "500";
+
         // Add discard button
         const discardBtn = doc.createElement("button");
         discardBtn.textContent = "❌ Discard";
@@ -449,6 +460,9 @@
         });
 
         li.appendChild(a);
+        if (user.connectionDegree) {
+            li.appendChild(degreeBadge);
+        }
         li.appendChild(discardBtn);
 
         const br = doc.createElement("br");
@@ -648,22 +662,24 @@
             // Remove additional name in parentheses (e.g., "Sidney (Sid) M." -> "Sidney M.")
             displayName = displayName.replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
 
+            const connectionDegreeText = connectionDegreeEl?.textContent.trim().toLowerCase() || '';
+
             const user = {
                 displayName,
                 description: descElem?.textContent.trim() || '',
-                link: linkElem ? linkElem.href : ''
+                link: linkElem ? linkElem.href : '',
+                connectionDegree: connectionDegreeText
             };
 
-            if (!connectionDegreeEl) {
+            if (!connectionDegreeText) {
                 // could be a company or something else
                 console.log("⚠️ No connection degree element for user:", user);
-                // we treat this reaction as connnection for now
+                // we treat this reaction as connection for now
                 connections.push(user);
                 continue;
             }
 
-            const text = connectionDegreeEl.textContent.trim().toLowerCase();
-            const isConnection = text.includes('1er') || text.includes('1st');
+            const isConnection = connectionDegreeText.includes('1er') || connectionDegreeText.includes('1st');
             if (isConnection) {
                 connections.push(user);
             } else {
