@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         LinkedIn Message Template Filler
+// @name         LinkedIn Message Filler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.11
-// @description  Auto-fill LinkedIn message template with name and area
+// @version      0.1.12
+// @description  Auto-fill message templates with user info
 // @match        https://www.linkedin.com/mynetwork/invite-connect/connections/
 // @match        https://www.linkedin.com/in/*
 // @grant        GM_getValue

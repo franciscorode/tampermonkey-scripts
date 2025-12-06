@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Notion curl generator
+// @name         LinkedIn to Notion
 // @namespace    http://tampermonkey.net/
-// @version      0.0.6
-// @description  Generate button to copy curl command to create a Notion page
+// @version      0.0.7
+// @description  Copy curl to create Notion page from profile
 // @match        https://www.linkedin.com/in/*
 // @grant        GM_getValue
 // @grant        GM_setValue

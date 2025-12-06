@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         LinkedIn Chat Canned Responses
+// @name         LinkedIn Canned Replies
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
-// @description  Adds a button to LinkedIn chats to insert canned responses
+// @version      1.0.2
+// @description  Insert predefined replies in LinkedIn chat
 // @author       ChatGPT
 // @match        https://www.linkedin.com/messaging/*
 // @grant        none
