@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to make comments on LinkedIn posts
 // @namespace    http://tampermonkey.net/
-// @version      2.0.0
+// @version      2.1.0
 // @description  Adds a button to copy AI prompt to generate comments to a post
 // @author       ChatGPT
 // @match        https://www.linkedin.com/feed/*
@@ -100,16 +100,29 @@
     Reason: Comments >= reactions suggests artificial engagement gaming
 
     [If score ≥ 7:]
-    ✓ WORTH COMMENTING
-
-    Then provide 3–5 comment options that are:
+    ✓ WORTH COMMENTING - But first, what's your angle?
+    
+    Before I can write comments, I need you to provide one of these:
+    - A real experience you've had that relates to this post (specific project, failure, win, or decision)
+    - A contrarian take you have based on your work (what you've learned that contradicts the post or adds nuance)
+    - A concrete example or data point from your experience that validates or challenges what's being said
+    
+    Be specific. "I've dealt with this" is not enough. "We tried X at my last startup and it failed because Y" is what I need.
+    
+    If you can't think of something concrete in 30 seconds, downgrade this to "React Only" — you don't have a real angle.
+    
+    **Once you provide your input above:**
+    
+    Generate 3-5 comment options that are:
     - One sentence maximum
     - Witty and light-hearted (avoid being overly serious or formal)
-    - Genuinely relevant to the post content
+    - Built directly from the specific experience/angle you shared and relevant to the post content
     - Conversation starters—written to encourage the author or others to reply
-    - Insightful or funny, but never salesy
-    - Based on real experience, not generic observations
-
+    - Authentic to your voice, not generic observations
+    - Never salesy or self-promotional
+    
+    Each comment should feel like it could only come from someone who actually lived through what you described.
+    
     [If score 4-6:]
     👍 REACT ONLY - Give it a like or reaction
     Reason: [brief explanation of why it's worth acknowledging but not commenting]
@@ -200,16 +213,29 @@
     Reason: Comments >= reactions suggests artificial engagement gaming
 
     [If score ≥ 7:]
-    ✓ WORTH COMMENTING
-
-    Then provide 3–5 comment options that are:
+    ✓ WORTH COMMENTING - But first, what's your angle?
+    
+    Before I can write comments, I need you to provide one of these:
+    - A real experience you've had building with GenAI, LLMs, or AI tools (specific bug, win, or "aha" moment)
+    - A relatable pain point you've felt as a builder (something that made you laugh, cry, or want to flip a table)
+    - A concrete example or observation from your work that connects to this post
+    
+    Be specific. "I've used this tool" is not enough. "I tried X for Y use case and it crashed because Z" is what I need.
+    
+    If you can't think of something concrete in 30 seconds, downgrade this to "React Only" — you don't have a real angle.
+    
+    **Once you provide your input above:**
+    
+    Generate 3-5 comment options that are:
     - One sentence maximum
     - Witty and light-hearted (avoid being overly serious or formal)
-    - Genuinely relevant to the post content
+    - Built directly from the specific experience/angle you shared and relevant to the post content
     - Conversation starters—written to encourage the author or others to reply
-    - Relatable or funny, showing you "get it" as a fellow builder
+    - Authentic to your voice, not generic observations
     - Never salesy or self-promotional
-
+    
+    Each comment should feel like it could only come from someone who actually lived through what you described.
+    
     [If score 4-6:]
     👍 REACT ONLY - Give it a like or reaction
     Reason: [brief explanation of why it's worth acknowledging but not commenting]
