@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         LinkedIn Comment Prompt
+// @name         Get prompt to make comments on LinkedIn posts
 // @namespace    http://tampermonkey.net/
-// @version      2.1.1
-// @description  Copy AI prompt to comment on posts
+// @version      2.1.0
+// @description  Adds a button to copy AI prompt to generate comments to a post
 // @author       ChatGPT
 // @match        https://www.linkedin.com/feed/*
 // @match        https://www.linkedin.com/in/*/recent-activity/all/

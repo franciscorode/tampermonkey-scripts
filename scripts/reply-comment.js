@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         LinkedIn Reply Prompt
+// @name         Get prompt to reply comments on LinkedIn
 // @namespace    http://tampermonkey.net/
-// @version      1.0.8
-// @description  Copy AI prompt to reply to comments
+// @version      1.0.7
+// @description  Adds a button to LinkedIn comments to copy a prompt to reply them
 // @author       ChatGPT
 // @match        https://www.linkedin.com/in/*/recent-activity/all/
 // @match        https://www.linkedin.com/posts/*
