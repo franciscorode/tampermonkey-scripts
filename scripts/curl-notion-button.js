@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Notion curl generator
 // @namespace    http://tampermonkey.net/
-// @version      0.1.1
+// @version      0.2.0
 // @description  Generate button to copy curl command (profiles) or prompt (companies)
 // @match        https://www.linkedin.com/in/*
 // @match        https://www.linkedin.com/company/*
@@ -63,6 +63,78 @@ Return:
         }
         return container;
     }
+
+    // ======= COMPANY DISCARD TRACKING =======
+    function getCompanyDiscarded() {
+        const stored = GM_getValue("company_discarded", null);
+        return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveCompanyDiscarded(discarded) {
+        GM_setValue("company_discarded", JSON.stringify(discarded));
+    }
+
+    function setDiscardedButtonStyle(btn) {
+        btn.innerText = "☑️ Discarded";
+        btn.style.border = "1px solid #1976d2";
+        btn.style.background = "#e3f2fd";
+        btn.style.color = "#1976d2";
+        btn.style.cursor = "default";
+        btn.disabled = true;
+    }
+
+    function setActiveDiscardButtonStyle(btn) {
+        btn.innerText = "❌ Discard";
+        btn.style.border = "1px solid #d32f2f";
+        btn.style.background = "white";
+        btn.style.color = "#d32f2f";
+        btn.style.cursor = "pointer";
+    }
+
+    function getCompanySlugFromUrl() {
+        const path = window.location.pathname;
+        const match = path.match(/\/company\/([^\/]+)/);
+        return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    function addCompanyDiscardButton() {
+        const container = getButtonsContainer();
+        if (container.querySelector('.company-discard-btn')) return;
+
+        const companySlug = getCompanySlugFromUrl();
+        if (!companySlug) {
+            console.error("❌ Could not extract company slug from URL.");
+            return;
+        }
+
+        const discarded = getCompanyDiscarded();
+        const isAlreadyDiscarded = discarded.includes(companySlug);
+
+        const discardBtn = document.createElement("button");
+        discardBtn.className = "company-discard-btn";
+        discardBtn.title = companySlug;
+        discardBtn.style.margin = "8px";
+        discardBtn.style.padding = "4px 8px";
+        discardBtn.style.borderRadius = "12px";
+        discardBtn.style.fontWeight = "bold";
+
+        if (isAlreadyDiscarded) {
+            setDiscardedButtonStyle(discardBtn);
+        } else {
+            setActiveDiscardButtonStyle(discardBtn);
+            discardBtn.addEventListener("click", () => {
+                const discarded = getCompanyDiscarded();
+                if (!discarded.includes(companySlug)) {
+                    discarded.push(companySlug);
+                    saveCompanyDiscarded(discarded);
+                    setDiscardedButtonStyle(discardBtn);
+                }
+            });
+        }
+
+        container.appendChild(discardBtn);
+    }
+    // ======= END COMPANY DISCARD TRACKING =======
 
     function addButton() {
         const container = getButtonsContainer();
@@ -196,6 +268,10 @@ curl -X POST https://api.notion.com/v1/pages \\
         if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
             console.log("Triggering add button to copy company prompt");
             addCompanyButton();
+        }
+        if (e.key.toLowerCase() === 'd' && window.location.pathname.includes('/company/')) {
+            console.log("Triggering add company discard button");
+            addCompanyDiscardButton();
         }
     });
 
