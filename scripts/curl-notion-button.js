@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Notion curl generator
 // @namespace    http://tampermonkey.net/
-// @version      0.1.0
+// @version      0.1.1
 // @description  Generate button to copy curl command (profiles) or prompt (companies)
 // @match        https://www.linkedin.com/in/*
 // @match        https://www.linkedin.com/company/*
@@ -45,7 +45,7 @@ LinkedIn: [company_url]
 
 Return:
 1. Decision
-2. Description with next format: [INDUSTRY] [scaleup | tech company | etc] based on [LOCATION]
+2. Description with next format: [company_name] ([industry] [scaleup | tech company | etc] based on [location]
     `;
 
     function getButtonsContainer() {
