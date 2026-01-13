@@ -27,13 +27,17 @@ This file contains critical rules and patterns for Claude Code when working on t
 
 ### 2. SCRIPT VERSION POLICY
 
-**ALWAYS increment `@version` in Tampermonkey script headers when making changes.**
+**Increment `@version` in Tampermonkey script headers once per commit cycle.**
 
 ✅ **ALWAYS:**
 
-- Check if `@version` has been incremented after modifying a script
-- Increment the version number before committing if not already done
+- Before incrementing, check if version was already bumped since last commit: `git diff HEAD -- <file> | grep @version`
+- Only increment if the version matches the last committed version (not already bumped)
 - Use semantic versioning: `major.minor.patch` (e.g., `1.0.0` → `1.0.1` for fixes, `1.1.0` for features)
+
+❌ **NEVER:**
+
+- Increment version multiple times before a commit (one bump per commit cycle)
 
 ---
 
