@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Notion curl generator
 // @namespace    http://tampermonkey.net/
-// @version      0.2.0
+// @version      0.2.1
 // @description  Generate button to copy curl command (profiles) or prompt (companies)
 // @match        https://www.linkedin.com/in/*
 // @match        https://www.linkedin.com/company/*
@@ -42,6 +42,7 @@ LinkedIn: [company_url]
 - 4 YES → INVESTIGATE (check their data team, posts, job openings)
 - ≤3 YES → SKIP
 
+**Note:** If you cannot access LinkedIn, search the internet for this company to find the answers.
 
 Return:
 1. Decision
