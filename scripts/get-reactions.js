@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LinkedIn Reactions Scraper
 // @namespace    http://tampermonkey.net/
-// @version      2.2.0
+// @version      2.2.1
 // @description  Scrape LinkedIn reactions modal users until a specific username, store & print JSON
 // @author       You
 // @match        https://www.linkedin.com/in/*/recent-activity/*
@@ -24,7 +24,8 @@
     const VICTOR_TARGET_AUDIENCE_KEYWORDS = [
         "data engineer","data engineering","bigdata","data architect", " CDO ", "Head of data","VP of data",
         "Data manager","Director of Data","Data Leader", "Chief data officer", " CIO ", "data engineering manager",
-        "data lead","VP data", "Head of analytics", "Chief analytics officer", "VP analytics", "Director of analytics"
+        "data lead","VP data", "Head of analytics", "Chief analytics officer", "VP analytics", "Director of analytics",
+        "Analytics Lead"
     ].map(k => k.toLowerCase());
 
     const VICTOR_DOUBT_TARGET_AUDIENCE_KEYWORDS = [
@@ -48,7 +49,7 @@
         "AI lead", "AI team lead", "Head of machine learning", "Head of ML", "VP of machine learning", "VP ML",
         "Director of machine learning", "Director ML", "Machine learning architect", "ML architect",
         "LLM engineer", " LLM ", "AI/ML", "Artificial intelligence", "Gen AI", "AI engineering manager",
-        "Engineering manager"
+        "Engineering manager", "RAG", "Prompt Engineering", "Agents", "MCP", "AI Developer", "AI Team Leader"
     ].map(k => k.toLowerCase());
     const FRAN_DOUBT_TARGET_AUDIENCE_KEYWORDS = [
         "full stack", "fullstack", "engineer", "software", "developer", " ai ", "founder", "co-founder",
@@ -73,7 +74,8 @@
         "network administrator", "system administrator", "sysadmin", "wordpress", "webmaster",
         "frontend", "frontend developer","database administrator", " DBA ", "SAP", "Oracle", "mainframe", "MBA",
         "SAS", "MSc", "PhD", "doctorate", "Site Reliability", "SRE", "technical support", "IT support",
-        "Master", "Aerospace"
+        "Master", "Aerospace", "School", "Mechanical", "Autodesk", "Graduate", "Attended", "college",
+        "Aprendiz", "Candidate", "fellowship", "Aspiring", "junior", "solution architect"
     ].map(k => k.toLowerCase());
 
     const VICTOR_BLACKLIST_KEYWORDS = [
