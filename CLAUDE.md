@@ -41,21 +41,6 @@ This file contains critical rules and patterns for Claude Code when working on t
 
 ---
 
-### Making Changes
-
-1. **Make code changes**
-2. **IMMEDIATELY run `pnpm type-check`**
-3. **Fix any TypeScript errors**
-4. **Continue with implementation**
-
-### Before Asking to Commit
-
-1. **Run all quality checks** (type-check, lint, build, test)
-2. **Show summary of changes**
-3. **ASK user**: "Do you want me to commit these changes?"
-
----
-
 ## 🤔 DEVELOPMENT METHODOLOGY
 
 **CRITICAL PRIORITY: Code quality, maintainability, and best practices over speed.**
