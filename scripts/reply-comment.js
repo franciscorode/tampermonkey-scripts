@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Get prompt to reply comments on LinkedIn
 // @namespace    http://tampermonkey.net/
-// @version      1.0.7
+// @version      1.1.0
 // @description  Adds a button to LinkedIn comments to copy a prompt to reply them
 // @author       ChatGPT
 // @match        https://www.linkedin.com/in/*/recent-activity/all/
@@ -38,44 +38,46 @@
     """
     
     Evaluate this comment and give it a score from 1-10 based on these criteria:
-    
+
     **Comment Quality (0-4 points):**
     - Is this a thoughtful comment that adds value, asks a good question, or shows genuine engagement?
-    - Or is it generic ("Great post!", "Thanks for sharing", emoji-only)?
-    
+    - Does it offer a good reframe, personal experience, or interesting perspective?
+    - Or is it generic fluff ("Great post!", "Thanks for sharing", emoji-only)?
+
     **Relationship Value (0-3 points):**
     - Based on the comment author's name/title, are they in my target audience (data engineer, manager, CDO) or an influencer?
     - Could replying help build a meaningful connection?
-    
+
     **Conversation Potential (0-3 points):**
     - Does the comment open a conversation worth having?
     - Can I add real value in my reply, or would I just be being polite?
-    
+
     **Response format:**
-    
+
     **Comment Summary:** [1 sentence describing what the commenter said]
-    
+
     **Score: [X/10]**
-    
+
     [If score ≥ 7:]
     ✓ REPLY - This deserves a thoughtful response
-    
+
     Generate 3–5 reply options that are:
     - Authentic and conversational (not salesy or overly formal)
     - Maximum 2 lines each
     - Value-adding—acknowledge their point, share a relevant insight, or ask a thoughtful follow-up question
     - Natural enough that they encourage continued conversation
     - Professional but approachable
-    
-    [If score 4-6:]
-    👍 REACT ONLY - A like or reaction is enough here
+
+    [If score 3-6:]
+    👍 LIKE - Show appreciation with a like/reaction
+    Reason: [brief explanation of what made it worth acknowledging]
+
+    [If score < 3:]
+    ⊘ SKIP - Don't engage
+    Only skip for: obvious bots/spam, incongruent comments, or empty fluff ("Thanks for sharing!", "Great!", emoji-only)
     Reason: [brief explanation]
-    
-    [If score < 4:]
-    ⊘ IGNORE - Not worth your time
-    Reason: [brief explanation]
-    
-    Focus on replies that build real connections with the right people, not on being responsive to everyone.
+
+    Focus replies on building real connections. Be generous with likes—it's courtesy that encourages future engagement.
     `;
     
     const replyCommentFranPrompt = `
@@ -97,44 +99,46 @@
     """
     
     Evaluate this comment and give it a score from 1-10 based on these criteria:
-    
+
     **Comment Quality (0-4 points):**
     - Is this a thoughtful comment that adds value, asks a question, or shows genuine engagement?
-    - Or is it generic ("Great post!", "Thanks for sharing", emoji-only)?
-    
+    - Does it offer a good reframe, personal experience, or interesting perspective?
+    - Or is it generic fluff ("Great post!", "Thanks for sharing", emoji-only)?
+
     **Relationship Value (0-3 points):**
     - Based on the comment author's name/title, are they in my target audience (AI engineer, manager, CTO) or someone I should connect with?
     - Could replying help build visibility or a connection?
-    
+
     **Engagement Opportunity (0-3 points):**
     - Does the comment open a conversation or let me show personality?
     - Can I add value, humor, or keep the conversation going?
-    
+
     **Response format:**
-    
+
     **Comment Summary:** [1 sentence describing what the commenter said]
-    
+
     **Score: [X/10]**
-    
+
     [If score ≥ 6:]
     ✓ REPLY - Worth engaging with
-    
+
     Generate 3–5 reply options that are:
     - Authentic and conversational (not salesy or overly formal)
     - Maximum 2 lines each
     - Value-adding—acknowledge their point, share a relevant insight, or ask a thoughtful follow-up question
     - Natural enough that they encourage continued conversation
     - Professional but approachable
-    
-    [If score 3-5:]
-    👍 REACT ONLY - A like or reaction is enough here
+
+    [If score 2-5:]
+    👍 LIKE - Show appreciation with a like/reaction
+    Reason: [brief explanation of what made it worth acknowledging]
+
+    [If score < 2:]
+    ⊘ SKIP - Don't engage
+    Only skip for: obvious bots/spam, incongruent comments, or empty fluff ("Thanks for sharing!", "Great!", emoji-only)
     Reason: [brief explanation]
-    
-    [If score < 3:]
-    ⊘ IGNORE - Not worth your time
-    Reason: [brief explanation]
-    
-    At 800 followers, you can afford to be more responsive. Reply to most substantive comments to build connections and show you're active.
+
+    At 800 followers, be responsive and generous with engagement. Like most comments, reply to substantive ones.
     `;
 
 
